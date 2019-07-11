@@ -1,0 +1,40 @@
+.box {
+  width: 100%;
+  height: 100%;
+  background: url("../../src/assets/img/backpink.jpg");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .back-box {
+    width: 90%;
+    height: 100%;
+    background: rgba(250,250,250,0.3);
+    display: flex;
+    flex-direction: column;
+    .top-content{
+        width: 100%;
+        height: 99px;
+        background: rgba(250,250,250,0.8);
+    }
+    .bottom-box{
+        display: flex;
+        justify-content: space-between;
+        padding-top: 20px;
+        .left-select-box {
+            width: 27%;
+            height: 100%;
+          }
+          .right-content-box{
+            width: 70%;
+            height: 100%;
+            background: rgba(250,250,250,0.8);
+          }
+    }
+    
+  }
+
+  
+}
