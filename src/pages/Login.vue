@@ -46,18 +46,12 @@ export default {
   },
   methods: {
     toLogin() {
-      console.log(this.username, this.password);
       login(
-        //   {
-        //   username: this.username,
-        //   password: this.password
-        // }
-        {
-          username: "admin",
-          password: "123456"
+          {
+          username: this.username,
+          password: this.password
         }
       ).then(res => {
-        console.log("啦啦啦", res);
         if (res) {
           this.$router.replace({
             name: "home"

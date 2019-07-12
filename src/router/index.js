@@ -3,11 +3,13 @@ import Router from 'vue-router'
 import Login from '../pages/Login'
 import Home from '../pages/Home'
 import Main from '../pages/Main';
-import UserList from '../pages/MainChild/UserList';
+import Default from '../pages/MainChild/Default';
+import Users from '../pages/MainChild/Users';
 
 Vue.use(Router)
 
 export default new Router({
+  mode: 'history',
   routes: [
     {
       path: '/login',
@@ -24,13 +26,18 @@ export default new Router({
           path: '/main',
           name: 'main',
           component: Main,
-          redirect: '/userList',
+          redirect: '/default',
           children:[
             {
-              path: '/userList',
-              name: 'userList',
-              component: UserList
-            }
+            path: '/default',
+            name: 'default',
+            component: Default
+          },
+            {
+              path: '/users',
+              name: 'users',
+              component: Users
+            },
           ]
         }
       ]
@@ -39,5 +46,6 @@ export default new Router({
       path:"*",
       redirect:"/login"
     }
-  ]
+  ],
+  
 })
