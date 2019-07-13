@@ -8,9 +8,39 @@
         v-model="searchText"
         @keydown.enter.native="toSearch"
       />
-      <Button type="success" class="add-btn">添加用户</Button>
+      <Button type="success" class="add-btn" @click="showModal">添加用户</Button>
     </div>
     <Table :columns="columns1" :data="users_list"></Table>
+    <Modal v-model="modal1" title="添加用户" @on-ok="addUser">
+      <div class="add-box">
+        <p>用户名:</p>
+        <Input placeholder="Username" v-model="username" />
+      </div>
+      <div class="add-box">
+        <p>密码:</p>
+        <Input placeholder="Password" v-model="password" />
+      </div>
+      <div class="add-box">
+        <p>邮箱:</p>
+        <Input placeholder="Email" v-model="email" />
+      </div>
+      <div class="add-box">
+        <p>电话:</p>
+        <Input placeholder="Phone" v-model="mobile" />
+      </div>
+    </Modal>
+    <div class="page-box">
+      <Page
+        :total="users_data.total"
+        :page-size="pageSize"
+        @on-page-size-change="changePageSize"
+        @on-change="changePage"
+        :page-size-opts="opts"
+        show-total
+        show-elevator
+        show-sizer
+      />
+    </div>
   </div>
 </template>
 
@@ -22,7 +52,8 @@ import {
   deleteUser,
   getRoles,
   setUserRole,
-  getRoleById
+  getRoleById,
+  addUser
 } from "@/api/http";
 export default {
   name: "Box",
@@ -191,7 +222,8 @@ export default {
                           email: email,
                           mobile: mobile
                         }).then(res => {
-                          this.resetUsersList(params.index, "edit",res);
+                          this.getUsers(this.pageNum,this.pageSize);
+                          // this.resetUsersList(params.index, "edit", res);
                         });
                       },
                       onCancel: () => {}
@@ -226,7 +258,7 @@ export default {
                         deleteUser({
                           id: params.row.id
                         }).then(res => {
-                          this.resetUsersList(params.index, "delete",res);
+                          this.getUsers(this.pageNum,this.pageSize);
                         });
                       }
                     });
@@ -353,7 +385,7 @@ export default {
                           getRoleById({
                             id: res.rid
                           }).then(res => {
-                            this.resetUsersList(params.index, "setRole",res);
+                            this.getUsers(this.pageNum,this.pageSize);
                           });
                         });
                       },
@@ -368,27 +400,41 @@ export default {
       ],
       users_data: [],
       users_list: [],
-      searchText: ""
+      searchText: "",
+      username: "",
+      password: "",
+      email: "",
+      mobile: "",
+      opts: [2, 4, 6, 8],
+      pageSize: 4,
+      pageNum:1
     };
   },
   mounted() {
-    getUsers({
-      pagenum: 1,
-      pagesize: 4
-    }).then(res => {
-      console.log("用户列表", res);
-      var users_data = res;
-      for (var u in users_data.users) {
-        users_data.users[u].create_time = new Date(
-          users_data.users[u].create_time
-        ).toLocaleDateString();
-      }
-      this.users_data = users_data;
-      this.users_list = this.users_data.users;
-    });
+    this.getUsers(1,4);
   },
   methods: {
-    resetUsersList(index, type,res) {
+    getUsers(pageNum,pageSize) {
+      this.pageNum=pageNum;
+      this.pageSize=pageSize;
+      //用户列表
+      getUsers({
+        pagenum: pageNum,
+        pagesize:pageSize
+      }).then(res => {
+        var users_data = res;
+        for (var u in users_data.users) {
+          users_data.users[u].create_time = new Date(
+            users_data.users[u].create_time
+          ).toLocaleDateString();
+        }
+        this.users_data = users_data;
+        this.users_list = this.users_data.users;
+        console.log("用户列表", this.users_data);
+      });
+    },
+    //减少请求
+    resetUsersList(index, type, res) {
       var users_list = JSON.parse(JSON.stringify(this.users_list));
       if (type === "delete") {
         users_list.splice(index, 1);
@@ -401,15 +447,42 @@ export default {
       this.users_list = users_list;
       this.users_data.users = this.users_list;
     },
+    //搜索
     toSearch() {
-      console.log("this.searchText", this.searchResult());
-      this.users_list=this.searchResult();
+      this.users_list = this.searchResult();
     },
     searchResult() {
-      var that=this;
+      var that = this;
       return this.users_data.users.filter(function(v, i, a) {
         return v.username.indexOf(that.searchText) != -1;
       });
+    },
+    //添加用户
+    addUser() {
+      addUser({
+        username: this.username,
+        password: this.password,
+        email: this.email,
+        mobile: this.mobile
+      }).then(res => {
+        this.getUsers();
+      });
+    },
+    //显示添加用户输入框
+    showModal() {
+      this.username = "";
+      this.password = "";
+      this.email = "";
+      this.mobile = "";
+      this.modal1 = true;
+    },
+    changePageSize(pageSize) {
+      this.pageSize=pageSize;
+      this.getUsers(this.pageNum,this.pageSize);
+    },
+    changePage(pageNum) {
+      this.pageNum=pageNum;
+      this.getUsers(this.pageNum,this.pageSize);
     }
   },
   components: {}
@@ -436,10 +509,8 @@ export default {
 .ivu-input[disabled],
 fieldset[disabled] .ivu-input {
   background: rgba(164, 84, 110, 0.7);
-  color: #666666;
-}
-.ivu-input {
-  font-size: 16px;
+  color: #ffffff;
+  font-size: 14px;
 }
 .ivu-switch-checked {
   border-color: rgba(246, 187, 66, 0.9);
@@ -462,5 +533,17 @@ fieldset[disabled] .ivu-input {
 }
 .my-div .ivu-select {
   width: 50%;
+}
+.add-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  padding: 10px;
+}
+.ivu-page {
+  display: flex;
+  justify-content: center;
+  margin-top: 27px;
 }
 </style>

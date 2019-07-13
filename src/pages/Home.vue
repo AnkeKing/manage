@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { getMenus,addUser } from "../api/http";
+import { getMenus} from "../api/http";
 export default {
   name: "Box",
   data() {
@@ -59,14 +59,7 @@ export default {
     getMenus().then(res => {
       this.menus = res;
     });
-    addUser({
-      username: "admin",
-      password: "123456",
-      email: "123456",
-      mobile: "56789"
-    }).then(res => {
-      console.log("添加用户", res);
-    });
+   
   },
   components: {}
 };

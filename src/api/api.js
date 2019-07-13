@@ -37,7 +37,7 @@ function http(url, method, data, params) {
         params,
     }).then(res => {
         if (res) {
-            if (res.data.meta.status === 200) {
+            if (res.data.meta.status === 200||res.data.meta.status === 201||res.data.meta.status === 204) {
                 // store.dispatch("showWarning", res.data.meta.msg);
                 Message.success(res.data.meta.msg)
                 return res.data.data;
