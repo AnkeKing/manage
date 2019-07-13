@@ -27,6 +27,27 @@ export const getUsers = data => {//左侧菜单权限
 export const getMenus = data => {//用户数据列表
     return http('menus', 'get', data, data);
 }
-export const setUserState = data => {//用户数据列表
+export const getUserById = data => {// 根据 ID 查询用户信息
+    return http('users/'+data.id, 'get', data, data);
+}
+export const setUserState = data => {//设置用户状态
     return http('users/'+data.uid+'/state/'+data.type, 'put', data, data);
+}
+export const editUser = data => {//编辑用户提交
+    return http('users/'+data.id, 'put', data, data);
+}
+export const deleteUser = data => {//删除用户
+    return http('users/'+data.id, 'delete', data, data);
+}
+export const getRoles = data => {//角色列表
+    return http('roles', 'get', data, data);
+}
+export const setUserRole = data => {//设置用户角色
+    return http('users/'+data.id+'/role', 'put', data, data);
+}
+export const getRoleById = data => {//根据 ID 查询角色
+    return http('roles/'+data.id, 'get', data, data);
+}
+export const addUser = data => {//添加用户
+    return http('users', 'post', data, data);
 }

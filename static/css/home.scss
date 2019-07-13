@@ -76,6 +76,22 @@
             overflow: auto;
             background: rgba(250,250,250,0.8);
             border-radius: 3px;
+            .title-box{
+              margin: 15px;
+              span::after{
+                content: "/";
+                margin: 0px 8px 0 8px;
+                color: rgba(246,187,66,0.9);
+                font-weight: bold;
+                font-size: 17px;
+              }
+              span:first-child{
+                font-weight: bold;
+              }
+              span:last-child::after{
+                content: "";
+              }
+            }
           }
     }
     

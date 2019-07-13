@@ -1,5 +1,17 @@
-.box {
-  .icon {
-    font-family: Ionicons;
-  }
+.box{
+    display: flex;
+    flex-direction: column;
+    .search-box{
+        display: flex;
+        justify-content: flex-start;
+        padding:0 20px 20px 20px;
+        .search-input{
+            margin-right: 7px;
+            width:200px;
+        }
+        .add-btn{
+            background:rgb(102, 143, 108);
+            border: rgb(102, 143, 108)
+        }
+    }
 }

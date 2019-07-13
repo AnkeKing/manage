@@ -3,6 +3,7 @@ import axios from 'axios'
 import qs from 'qs';
 import store from '../store/store';
 import router from '../router/index';
+import { Message } from 'iview';
 
 let Service = axios.create({//需要token拦截的请求
     baseURL: 'http://localhost:8888/api/private/v1/',
@@ -37,9 +38,11 @@ function http(url, method, data, params) {
     }).then(res => {
         if (res) {
             if (res.data.meta.status === 200) {
+                // store.dispatch("showWarning", res.data.meta.msg);
+                Message.success(res.data.meta.msg)
                 return res.data.data;
             } else {
-                store.dispatch("showWarning", res.data.meta.msg);
+                Message.error(res.data.meta.msg)
             }
         }
     }).catch(error => {

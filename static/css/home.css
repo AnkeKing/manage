@@ -90,3 +90,23 @@
   background: rgba(250, 250, 250, 0.8);
   border-radius: 3px;
 }
+
+.box .back-box .bottom-box .right-content-box .title-box {
+  margin: 15px;
+}
+
+.box .back-box .bottom-box .right-content-box .title-box span::after {
+  content: "/";
+  margin: 0px 8px 0 8px;
+  color: rgba(246, 187, 66, 0.9);
+  font-weight: bold;
+  font-size: 17px;
+}
+
+.box .back-box .bottom-box .right-content-box .title-box span:first-child {
+  font-weight: bold;
+}
+
+.box .back-box .bottom-box .right-content-box .title-box span:last-child::after {
+  content: "";
+}

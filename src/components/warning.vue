@@ -26,12 +26,13 @@ export default {
   position: fixed;
   z-index: 99;
   .warn-box {
-    padding: 15px 27px 15px 27px;
+    padding: 13px 27px 13px 27px;
     border-radius: 10px;
-    color: #ffffff;
-    font-size: 17px;
+    color: #666;
+    font-size: 16px;
     font-weight: bold;
-    background: rgba(0, 0, 0,0.7);
+    font-family: "楷书";
+    background: linear-gradient(to right, rgba(179,130,162,0.9) ,rgba(255,155,190,0.9));
     animation: hidden 2s linear;
   }
 }

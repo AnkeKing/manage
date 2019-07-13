@@ -24,6 +24,9 @@
           </Collapse>
         </div>
         <div class="right-content-box">
+          <div class="title-box" v-if="$route.name!='default'">
+            <span v-for="t in $route.query.titleArr">{{t}}</span>
+          </div>
           <router-view></router-view>
         </div>
       </div>
@@ -32,25 +35,37 @@
 </template>
 
 <script>
-import { getMenus } from "../api/http";
+import { getMenus,addUser } from "../api/http";
 export default {
   name: "Box",
   data() {
     return {
       value3: "1",
-      menus: [],
-      titleArr: []
+      menus: []
     };
   },
   methods: {
-    select(title, child) {
-      this.titleArr = [title, child.authName];
-      this.$router.replace({ name: child.path });
+    select(parentTitle, child) {
+      console.log("query", this.$route.query.titleArr);
+      this.$router.replace({
+        name: child.path,
+        query: {
+          titleArr: ["首页", parentTitle, child.authName]
+        }
+      });
     }
   },
   created() {
     getMenus().then(res => {
       this.menus = res;
+    });
+    addUser({
+      username: "admin",
+      password: "123456",
+      email: "123456",
+      mobile: "56789"
+    }).then(res => {
+      console.log("添加用户", res);
     });
   },
   components: {}
