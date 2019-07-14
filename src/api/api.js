@@ -29,18 +29,23 @@ Service.interceptors.response.use(response => {
     return Promise.reject(error)
 })
 
-function http(url, method, data, params) {
+function http(url, method, data) {
     return Service({
         url: url,
         method: method,
         data: data,
-        params
+        params:data
     }).then(res => {
         if (res) {
             if (res.data.meta.status === 200||res.data.meta.status === 201||res.data.meta.status === 204) {
                 Message.success(res.data.meta.msg)
                 return res.data.data;
             } else {
+                if(res.data.meta.msg==="无效token"){
+                    router.replace({
+                        name:"login"
+                    })
+                }
                 Message.error(res.data.meta.msg);
             }
         }
@@ -49,6 +54,5 @@ function http(url, method, data, params) {
     })
 }
 
-
-export { Service, http}
+export { Service, http,http2}
 

@@ -25,27 +25,66 @@ import {
   editRole,
   deleteRole,
   getRights,
+  getRoleById,
   setRoleRights
 } from "../../api/http";
-import axios from 'axios'
+import axios from "axios";
 export default {
   name: "Box",
   data() {
     return {
       modal1: false,
-      modal2: true,
+      modal2: false,
       value3: "1",
       roleName: "",
       roleDesc: "",
+      rids: {},
       currentRoleId: 0,
       rolesList: [],
       rights: [],
       columns1: [
         {
+          width: 30,
+          type: "expand",
+          render: (h, params) => {
+            console.log("params", params);
+            if (params.row.children.length > 0) {
+              return params.row.children.map(item => {
+                return item.children.map(child => {
+                  return child.children.map(grandSon => {
+                    console.log("nnnaaa", grandSon.authName);
+                    return h(
+                      "Tag",
+                      {
+                        props: {
+                          color: "rgb(179, 131, 172)",
+                          closable: true,
+                          name: grandSon.id
+                        }
+                      },
+                      grandSon.authName
+                    );
+                  });
+                });
+              });
+            } else {
+              return h(
+                "div",
+                {
+                  style: {
+                    color: "rgb(179, 131, 172)",
+                    fontWeight: "bold"
+                  }
+                },
+                "此角色暂无任何权限"
+              );
+            }
+          }
+        },
+        {
           title: "#",
           type: "index",
-          width: 50,
-          type: 'expand'
+          width: 50
         },
         {
           title: "角色名称",
@@ -210,6 +249,8 @@ export default {
                     this.getRoles();
                     this.modal2 = true;
                     this.currentRoleId = params.row.id;
+                    console.log("this.params", params);
+                    this.setRights(params.row.children);
                   }
                 }
               })
@@ -231,10 +272,21 @@ export default {
         this.rolesList = res;
       });
     },
+    //根据 ID 查询角色
+    getRoleById(id) {
+      getRoleById({
+        id: id
+      }).then(res => {
+        console.log("....", res);
+      });
+    },
+    //获取所有权限列表
     getRights() {
+      var that=this;
       getRights({
         type: "tree"
       }).then(res => {
+        console.log("所有权限",res)
         var rights = res;
         for (var r in rights) {
           var parent = rights[r];
@@ -249,8 +301,32 @@ export default {
           }
         }
         this.rights = rights;
-        console.log("this.rights", this.rights);
       });
+    },
+    //设置权限是否选中
+    setRights(currentRoleRights) {
+      console.log("???",currentRoleRights)
+        var rights = JSON.parse(JSON.stringify(this.rights));
+        // for (var r in rights) {
+        //   var parent = rights[r];
+        //   var currentParent =currentRoleRights[r];
+        //   for (var c in parent.children) {
+        //     var child = parent.children[c];
+        //     var currentChild = currentParent.children[c];
+        //     for (var s in child.children) {
+        //       var grandSon = child.children[s];
+        //       var currentGrandSon = currentChild.children[s];
+        //       if(currentGrandSon.id===grandSon.id){
+        //         console.log("currentGrandSon",currentGrandSon.authName);
+        //         console.log("grandSon",grandSon.authName);
+        //         grandSon.checked=true;
+        //       }else{
+        //         grandSon.checked=false;
+        //       }
+        //     }
+        //   }
+        // }
+        this.rights=rights;
     },
     //显示添加角色输入框
     showModal() {
@@ -268,33 +344,27 @@ export default {
       });
     },
     //角色授权
-    setRoleRights(rids) {
-      console.log("传入的rids",rids,"id",this.currentRoleId)
+    setRoleRights() {//bug
       setRoleRights({
         roleId: this.currentRoleId,
-        rids: rids
+        rids: this.rids
       }).then(res => {
         console.log("角色授权返回", res);
+        this.getRoles(); 
       });
-      // axios.post(
-      //   "http://localhost:8888/api/private/v1/roles/42/rights",
-      //   {"rids":"103,104,111"}
-      // ).then(res=>{
-      //   console.log("怎么肥四",res);
-      // })
     },
     //选中权限
     checkRights(event) {
-      console.log("选中权限？？？", event);
-      var str=""
+      var str = "";
       for (var e in event) {
-        if(e!=event.length-1){
-          str=event[e].id+","
-        }else{
-          str+=event[e].id;
+        if (e != event.length - 1) {
+          str = event[e].id + ",";
+        } else {
+          str += event[e].id;
         }
       }
-      this.setRoleRights({"rids":str});
+      this.rids = { rids: str };//不准确
+      console.log("选中时",this.rids)
     }
   },
   components: {}
