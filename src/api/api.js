@@ -34,20 +34,21 @@ function http(url, method, data, params) {
         url: url,
         method: method,
         data: data,
-        params,
+        params
     }).then(res => {
         if (res) {
             if (res.data.meta.status === 200||res.data.meta.status === 201||res.data.meta.status === 204) {
-                // store.dispatch("showWarning", res.data.meta.msg);
                 Message.success(res.data.meta.msg)
                 return res.data.data;
             } else {
-                Message.error(res.data.meta.msg)
+                Message.error(res.data.meta.msg);
             }
         }
     }).catch(error => {
         Promise.reject(error);
     })
 }
-export { Service, http }
+
+
+export { Service, http}
 

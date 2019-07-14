@@ -5,6 +5,13 @@ import Home from '../pages/Home'
 import Main from '../pages/Main';
 import Default from '../pages/MainChild/Default';
 import Users from '../pages/MainChild/Users';
+import Roles from '../pages/MainChild/Roles';
+import Rights from '../pages/MainChild/Rights';
+import Goods from '../pages/MainChild/Goods';
+import Params from '../pages/MainChild/Params';
+import Categories from '../pages/MainChild/Categories';
+import Orders from '../pages/MainChild/Orders';
+import Reports from '../pages/MainChild/Reports';
 
 Vue.use(Router)
 
@@ -40,6 +47,35 @@ var router= new Router({
               path: '/users',
               name: 'users',
               component: Users
+            },
+            {
+              path: '/roles',
+              name: 'roles',
+              component: Roles
+            }, {
+              path: '/rights',
+              name: 'rights',
+              component: Rights
+            }, {
+              path: '/goods',
+              name: 'goods',
+              component: Goods
+            }, {
+              path: '/params',
+              name: 'params',
+              component: Params
+            }, {
+              path: '/categories',
+              name: 'categories',
+              component: Categories
+            }, {
+              path: '/orders',
+              name: 'orders',
+              component: Orders
+            }, {
+              path: '/reports',
+              name: 'reports',
+              component: Reports
             },
           ]
         }

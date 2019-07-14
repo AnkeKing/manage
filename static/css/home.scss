@@ -11,91 +11,104 @@
   .back-box {
     width: 90%;
     height: 100%;
-    background: rgba(250,250,250,0.3);
+    background: rgba(250, 250, 250, 0.3);
     display: flex;
     flex-direction: column;
-    .top-content{
-        width: 100%;
-        height: 99px;
-        background: rgba(250,250,250,0.8);
-        display: flex;
-        justify-content: center;
-        align-items: center;
+
+    .top-content {
+      width: 100%;
+      height: 99px;
+      background: rgba(250, 250, 250, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 3px;
+
+      img {
+        width: 60px;
+        height: 60px;
+        margin-right: 30px;
+      }
+
+      a {
+        font-weight: bold;
+        font-family: "Arial";
+        font-size: 27px;
+      }
+    }
+
+    .bottom-box {
+      display: flex;
+      justify-content: space-between;
+      padding-top: 20px;
+
+      .left-select-box {
+        width: 14%;
+        height: 100vh;
+        font-weight: bold;
+        background: rgba(250, 250, 250, 0.8);
         border-radius: 3px;
-        img{
-          width: 60px;
-          height: 60px;
-          margin-right: 30px;
+
+        img {
+          width: 20px;
+          height: 20px;
+          margin-right: 10px;
         }
-        a{
-          font-weight: bold;
-          font-family: "Arial";
-          font-size:27px;
+
+        .default {
+          background: rgba(164, 84, 110, 0.7);
         }
-    }
-    .bottom-box{
-        display: flex;
-        justify-content: space-between;
-        padding-top: 20px;
-        .left-select-box {
-            width: 14%;
-            height: 100vh;
+
+        .active {
+          background: rgba(246, 187, 66, 0.9);
+        }
+
+        .select-btn {
+          width: 100%;
+          height: 45px;
+          border-radius: 30px;
+          justify-content: center;
+          color: white;
+          display: flex;
+          align-items: center;
+          margin-bottom: 10px;
+          cursor: pointer;
+
+          &:last-child {
+            margin-bottom: 0px;
+          }
+        }
+      }
+
+      .right-content-box {
+        width: 85%;
+        height: 100%;
+        background: rgba(250, 250, 250, 0.8);
+        border-radius: 3px;
+
+        .title-box {
+          margin: 15px;
+
+          span::after {
+            content: "/";
+            margin: 0px 8px 0 8px;
+            color: rgba(246, 187, 66, 0.9);
             font-weight: bold;
-            background: rgba(250,250,250,0.8);
-            border-radius: 3px;
-            img{
-              width: 20px;
-              height: 20px;
-              margin-right: 10px;
-            }
-            .default{
-              background: rgba(164,84,110,0.7);
-            }
-            .active{
-              background: rgba(246,187,66,0.9);
-            }
-            .select-btn{
-              width: 100%;
-              height: 45px;
-             
-              border-radius: 30px;
-              justify-content: center;
-              color: white;
-              display: flex;
-              align-items: center;
-              margin-bottom: 10px;
-              cursor: pointer;
-              &:last-child{
-                margin-bottom: 0px;
-              }
-            }
+            font-size: 17px;
           }
-          .right-content-box{
-            width: 85%;
-            height: 100%;
-            overflow: auto;
-            background: rgba(250,250,250,0.8);
-            border-radius: 3px;
-            .title-box{
-              margin: 15px;
-              span::after{
-                content: "/";
-                margin: 0px 8px 0 8px;
-                color: rgba(246,187,66,0.9);
-                font-weight: bold;
-                font-size: 17px;
-              }
-              span:first-child{
-                font-weight: bold;
-              }
-              span:last-child::after{
-                content: "";
-              }
-            }
+
+          span:first-child {
+            font-weight: bold;
           }
+
+          span:last-child::after {
+            content: "";
+          }
+        }
+      }
     }
-    
+
   }
 
-  
+
 }

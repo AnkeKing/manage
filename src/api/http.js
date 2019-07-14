@@ -51,3 +51,18 @@ export const getRoleById = data => {//根据 ID 查询角色
 export const addUser = data => {//添加用户
     return http('users', 'post', data, data);
 }
+export const addRole = data => {//添加角色
+    return http('roles', 'post', data, data);
+}
+export const editRole = data => {//编辑提交角色
+    return http('roles/'+data.id, 'put', data, data);
+}
+export const deleteRole = data => {//删除角色
+    return http('roles/'+data.id, 'delete', data, data);
+}
+export const setRoleRights = data => {//角色授权
+    return http('roles/'+data.roleId+'/rights', 'post',data, data);
+}
+export const getRights = data => {//所有权限列表
+    return http('rights/'+data.type, 'get', data, data);
+}

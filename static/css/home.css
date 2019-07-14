@@ -86,7 +86,6 @@
 .box .back-box .bottom-box .right-content-box {
   width: 85%;
   height: 100%;
-  overflow: auto;
   background: rgba(250, 250, 250, 0.8);
   border-radius: 3px;
 }

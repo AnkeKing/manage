@@ -63,6 +63,11 @@ export default {
       rolesList: [],
       columns1: [
         {
+          title: "#",
+          type: "index",
+          width:50
+        },
+        {
           title: "姓名",
           key: "username"
         },
@@ -265,7 +270,7 @@ export default {
                   }
                 }
               }),
-              //设置用户权限
+              //设置用户角色
               h("Button", {
                 props: {
                   // type: "error",
@@ -282,7 +287,6 @@ export default {
                 on: {
                   click: () => {
                     getRoles().then(res => {
-                      console.log("权限列表", res);
                       this.rolesList = res;
                     });
                     var rid = "";
@@ -414,10 +418,10 @@ export default {
     this.getUsers(1,4);
   },
   methods: {
+    //用户列表
     getUsers(pageNum,pageSize) {
       this.pageNum=pageNum;
       this.pageSize=pageSize;
-      //用户列表
       getUsers({
         pagenum: pageNum,
         pagesize:pageSize
@@ -492,58 +496,4 @@ export default {
 <style  rel='stylesheet/scss' lang='scss' scoped>
 @import url("../../../static/css/users.min");
 </style>
-<style>
-.ivu-input-wrapper {
-  width: 80%;
-  float: right;
-}
-.my-div {
-  line-height: 35px;
-  margin-bottom: 5px;
-}
-.top-div {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 30px;
-}
-.ivu-input[disabled],
-fieldset[disabled] .ivu-input {
-  background: rgba(164, 84, 110, 0.7);
-  color: #ffffff;
-  font-size: 14px;
-}
-.ivu-switch-checked {
-  border-color: rgba(246, 187, 66, 0.9);
-  background-color: rgba(246, 187, 66, 0.9);
-}
-.ivu-btn-primary {
-  background-color: rgba(164, 84, 110, 0.7);
-  border-color: rgba(164, 84, 110, 0.7);
-}
-.ivu-btn-primary:hover {
-  border-color: rgba(246, 187, 66, 0.9);
-  background-color: rgba(246, 187, 66, 0.9);
-}
-.ivu-modal-body .ivu-btn > span {
-  color: #666666;
-}
-.ivu-table td,
-.ivu-table th {
-  text-align: center;
-}
-.my-div .ivu-select {
-  width: 50%;
-}
-.add-box {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 15px;
-  padding: 10px;
-}
-.ivu-page {
-  display: flex;
-  justify-content: center;
-  margin-top: 27px;
-}
-</style>
+

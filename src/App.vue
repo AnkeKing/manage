@@ -74,5 +74,57 @@ a {
   /* Internet Explorer 10-11 */
   color: #cccccc;
 }
-
+.ivu-input-wrapper {
+  width: 80%;
+  float: right;
+}
+.my-div {
+  line-height: 35px;
+  margin-bottom: 5px;
+}
+.top-div {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+.ivu-input[disabled],
+fieldset[disabled] .ivu-input {
+  background: rgba(164, 84, 110, 0.7);
+  color: #ffffff;
+  font-size: 14px;
+}
+.ivu-switch-checked {
+  border-color: rgba(246, 187, 66, 0.9);
+  background-color: rgba(246, 187, 66, 0.9);
+}
+.ivu-btn-primary {
+  background-color: rgba(164, 84, 110, 0.7);
+  border-color: rgba(164, 84, 110, 0.7);
+}
+.ivu-btn-primary:hover {
+  border-color: rgba(246, 187, 66, 0.9);
+  background-color: rgba(246, 187, 66, 0.9);
+}
+.ivu-modal-body .ivu-btn > span {
+  color: #666666;
+}
+.ivu-table td,
+.ivu-table th {
+  text-align: center;
+}
+.my-div .ivu-select {
+  width: 50%;
+}
+.add-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  padding: 10px;
+}
+.ivu-page {
+  display: flex;
+  justify-content: center;
+  margin-top: 27px;
+}
 </style>

@@ -9,7 +9,7 @@
         <div class="left-select-box">
           <Collapse accordion v-model="value3">
             <Panel :name="obj.order.toString()" v-for="(obj,index) in menus" :key="index">
-              {{obj.authName}}{{obj.order}}
+              {{obj.authName}}
               <div
                 slot="content"
                 class="select-btn"
@@ -58,6 +58,7 @@ export default {
   created() {
     getMenus().then(res => {
       this.menus = res;
+      console.log("菜单栏path",res)
     });
    
   },
