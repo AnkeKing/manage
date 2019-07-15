@@ -26,7 +26,8 @@ import {
   deleteRole,
   getRights,
   getRoleById,
-  setRoleRights
+  setRoleRights,
+  deleteRoleRights
 } from "../../api/http";
 import axios from "axios";
 export default {
@@ -47,26 +48,97 @@ export default {
           width: 30,
           type: "expand",
           render: (h, params) => {
-            console.log("params", params);
+            // console.log("params", params);
+            var parentArr = [];
+            var childArr = [];
+            var grandSonArr = [];
             if (params.row.children.length > 0) {
-              return params.row.children.map(item => {
-                return item.children.map(child => {
-                  return child.children.map(grandSon => {
-                    console.log("nnnaaa", grandSon.authName);
-                    return h(
+              params.row.children.map(item => {
+                parentArr.push(
+                  h(
+                    "Tag",
+                    {
+                      props: {
+                        color: "rgb(102, 143, 108)",
+                        closable: true,
+                        name: item.id
+                      },
+                      on: {
+                        "on-close": (val, name) => {
+                          console.log("关闭。。。", val, name);
+                          deleteRoleRights({
+                            roleId: params.row.id,
+                            rightId: name
+                          }).then(res => {
+                            console.log("删除指定权限", res);
+                            this.getRoles();
+                          });
+                        }
+                      }
+                    },
+                    item.authName
+                  )
+                );
+                item.children.map(child => {
+                  childArr.push(
+                    h(
                       "Tag",
                       {
                         props: {
-                          color: "rgb(179, 131, 172)",
+                          color: "rgb(96, 133, 174)",
                           closable: true,
-                          name: grandSon.id
+                          name: child.id
+                        },
+                        on: {
+                          "on-close": (val, name) => {
+                            console.log("关闭。。。", val, name);
+                            deleteRoleRights({
+                              roleId: params.row.id,
+                              rightId: name
+                            }).then(res => {
+                              console.log("删除指定权限", res);
+                              this.getRoles();
+                            });
+                          }
                         }
                       },
-                      grandSon.authName
+                      child.authName
+                    )
+                  );
+                  child.children.map(grandSon => {
+                    grandSonArr.push(
+                      h(
+                        "Tag",
+                        {
+                          props: {
+                            color: "rgb(179, 131, 172)",
+                            closable: true,
+                            name: grandSon.id,
+                            size: "small"
+                          },
+                          on: {
+                            "on-close": (val, name) => {
+                              console.log("关闭。。。", val, name);
+                              deleteRoleRights({
+                                roleId: params.row.id,
+                                rightId: name
+                              }).then(res => {
+                                console.log("删除指定权限", res);
+                                this.getRoles();
+                              });
+                            }
+                          }
+                        },
+                        grandSon.authName
+                      )
                     );
                   });
                 });
               });
+              return h("div",{style:{display:"flex",justifyContent:"center"}}, [
+                h("div",{style:{width:"100px"}},[parentArr]),
+                h("div",{style:{width:"100px"}},[childArr]),
+                h("div",{style:{width:"370px"}},[grandSonArr])]);
             } else {
               return h(
                 "div",
@@ -250,7 +322,11 @@ export default {
                     this.modal2 = true;
                     this.currentRoleId = params.row.id;
                     console.log("this.params", params);
-                    this.setRights(params.row.children);
+                    // if (params.row.children.length > 0) {
+                    //     this.setRights(params.row.children);
+                    // }else{
+                    //     this.getRights();
+                    // }
                   }
                 }
               })
@@ -268,7 +344,7 @@ export default {
     //获取角色列表
     getRoles() {
       getRoles().then(res => {
-        console.log("角色列表", res);
+        // console.log("角色列表", res);
         this.rolesList = res;
       });
     },
@@ -277,16 +353,16 @@ export default {
       getRoleById({
         id: id
       }).then(res => {
-        console.log("....", res);
+        console.log("根据 ID 查询角色", res);
       });
     },
     //获取所有权限列表
     getRights() {
-      var that=this;
+      var that = this;
       getRights({
         type: "tree"
       }).then(res => {
-        console.log("所有权限",res)
+        console.log("所有权限", res);
         var rights = res;
         for (var r in rights) {
           var parent = rights[r];
@@ -297,6 +373,7 @@ export default {
             for (var s in child.children) {
               var grandSon = child.children[s];
               grandSon.title = grandSon.authName;
+              grandSon.checked = false;
             }
           }
         }
@@ -305,28 +382,47 @@ export default {
     },
     //设置权限是否选中
     setRights(currentRoleRights) {
-      console.log("???",currentRoleRights)
-        var rights = JSON.parse(JSON.stringify(this.rights));
-        // for (var r in rights) {
-        //   var parent = rights[r];
-        //   var currentParent =currentRoleRights[r];
-        //   for (var c in parent.children) {
-        //     var child = parent.children[c];
-        //     var currentChild = currentParent.children[c];
-        //     for (var s in child.children) {
-        //       var grandSon = child.children[s];
-        //       var currentGrandSon = currentChild.children[s];
-        //       if(currentGrandSon.id===grandSon.id){
-        //         console.log("currentGrandSon",currentGrandSon.authName);
-        //         console.log("grandSon",grandSon.authName);
-        //         grandSon.checked=true;
-        //       }else{
-        //         grandSon.checked=false;
-        //       }
-        //     }
-        //   }
-        // }
-        this.rights=rights;
+      // console.log("???", currentRoleRights);
+      // var rights = JSON.parse(JSON.stringify(this.rights));
+      // var allGrandSonArr = [];
+      // for (var r in rights) {
+      //   var parent = rights[r];
+      //   for (var c in parent.children) {
+      //     var child = parent.children[c];
+      //     for (var s in child.children) {
+      //       var grandSon = child.children[s];
+      //       grandSon.checked = false;
+      //       allGrandSonArr.push(grandSon);
+      //     }
+      //   }
+      // }
+      //   console.log("所有数组", allGrandSonArr);
+      //   var currentGrandSonArr = [];
+      //   for (var r in currentRoleRights) {
+      //     var currentParent = currentRoleRights[r];
+      //     for (var c in currentParent.children) {
+      //       var currentChild = currentParent.children[c];
+      //       for (var s in currentChild.children) {
+      //         var currentGrandSon = currentChild.children[s];
+      //         currentGrandSonArr.push(currentGrandSon);
+      //       }
+      //     }
+      //   }
+      //   console.log("当前新数组", currentGrandSonArr);
+      //   for (var curr in currentGrandSonArr) {
+      //     for (var all in allGrandSonArr) {
+      //       if (allGrandSonArr[all].id === currentGrandSonArr[curr].id) {
+      //         for (var r in rights) {
+      //           var parent = rights[r];
+      //           for (var c in parent.children) {
+      //             var child = parent.children[c];
+      //             child.children[all].checked = true;
+      //           }
+      //         }
+      //       }
+      //     }
+      //   }
+      // this.rights = rights;
     },
     //显示添加角色输入框
     showModal() {
@@ -344,13 +440,13 @@ export default {
       });
     },
     //角色授权
-    setRoleRights() {//bug
+    setRoleRights() {
+      //bug
       setRoleRights({
         roleId: this.currentRoleId,
         rids: this.rids
       }).then(res => {
-        console.log("角色授权返回", res);
-        this.getRoles(); 
+        this.getRoles();
       });
     },
     //选中权限
@@ -358,13 +454,14 @@ export default {
       var str = "";
       for (var e in event) {
         if (e != event.length - 1) {
-          str = event[e].id + ",";
+          str = str + event[e].id + ",";
         } else {
-          str += event[e].id;
+          str = str + event[e].id;
         }
       }
-      this.rids = { rids: str };//不准确
-      console.log("选中时",this.rids)
+      this.rids = { rids: str };
+      // console.log("事件触发", event);
+      // console.log("拼接形成", this.rids);
     }
   },
   components: {}
@@ -373,4 +470,8 @@ export default {
 
 <style  rel='stylesheet/scss' lang='scss' scoped>
 @import url("../../../static/css/roles.min");
+</style>
+<style>
+.ivu-table-expanded-cell {
+}
 </style>

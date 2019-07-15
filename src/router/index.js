@@ -7,7 +7,9 @@ import Default from '../pages/MainChild/Default';
 import Users from '../pages/MainChild/Users';
 import Roles from '../pages/MainChild/Roles';
 import Rights from '../pages/MainChild/Rights';
-import Goods from '../pages/MainChild/Goods';
+import GoodsMain from '../pages/MainChild/GoodsMain';
+import Goods from '../pages/MainChild/GoodsMain/Goods';
+import AddGoods from '../pages/MainChild/GoodsMain/AddGoods';
 import Params from '../pages/MainChild/Params';
 import Categories from '../pages/MainChild/Categories';
 import Orders from '../pages/MainChild/Orders';
@@ -15,34 +17,34 @@ import Reports from '../pages/MainChild/Reports';
 
 Vue.use(Router)
 
-var router= new Router({
+var router = new Router({
   mode: 'history',
   routes: [
     {
       path: '/login',
       name: 'login',
       component: Login
-    },{
+    }, {
       path: '/home',
       name: 'home',
       component: Home,
       redirect: '/main',
-      meta:{
+      meta: {
         requireAuth: true
       },
-      children:[
+      children: [
 
         {
           path: '/main',
           name: 'main',
           component: Main,
           redirect: '/default',
-          children:[
+          children: [
             {
-            path: '/default',
-            name: 'default',
-            component: Default
-          },
+              path: '/default',
+              name: 'default',
+              component: Default
+            },
             {
               path: '/users',
               name: 'users',
@@ -57,9 +59,22 @@ var router= new Router({
               name: 'rights',
               component: Rights
             }, {
-              path: '/goods',
-              name: 'goods',
-              component: Goods
+              path: '/goodsMain',
+              name: 'goodsMain',
+              component: GoodsMain,
+              redirect: '/goods',
+              children: [
+                {
+                  path: '/goods',
+                  name: 'goods',
+                  component: Goods
+                },
+                {
+                  path: '/addGoods',
+                  name: 'addgoods',
+                  component: AddGoods
+                }
+              ]
             }, {
               path: '/params',
               name: 'params',
@@ -82,11 +97,11 @@ var router= new Router({
       ]
     },
     {
-      path:"*",
-      redirect:"/login"
+      path: "*",
+      redirect: "/login"
     }
   ],
-  
+
 })
 router.beforeEach((to, from, next) => {
   if (to.meta.requireAuth) {//判断要跳转的页面是否需要登录
@@ -94,7 +109,7 @@ router.beforeEach((to, from, next) => {
       next();
     } else {
       // console.log("路由守卫传参：",to);
-      next({ path: '/login'});
+      next({ path: '/login' });
     }
   }
   next();

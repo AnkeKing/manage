@@ -66,3 +66,12 @@ export const setRoleRights = data => {//角色授权
 export const getRights = data => {//所有权限列表
     return http('rights/'+data.type, 'get', data);
 }
+export const deleteRoleRights = data => {//删除角色指定权限
+    return http('roles/'+data.roleId+'/rights/'+data.rightId, 'delete', data);
+}
+export const getGoods = data => {// 商品列表数据
+    return http('goods', 'get', data);
+}
+export const getCategories = data => {//商品分类列表
+    return http('categories', 'get', {type:[1,2,3]});
+}

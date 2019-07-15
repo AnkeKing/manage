@@ -1,6 +1,5 @@
 <template>
   <div class="box">
-    <h1>商品列表</h1>
   </div>
 </template>
 
@@ -8,7 +7,13 @@
 export default {
   name: "Box",
   data() {
-    return {};
+    return {
+    }
+  },
+  created(){
+  },
+  methods: {
+    
   },
   components: {}
 };

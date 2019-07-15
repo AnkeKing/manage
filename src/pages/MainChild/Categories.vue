@@ -5,10 +5,22 @@
 </template>
 
 <script>
+import {getCategories} from '../../api/http';
 export default {
   name: "Box",
   data() {
     return {};
+  },
+  created(){
+    this.getCategories();
+  },
+  methods:{
+    //商品分类列表
+    getCategories(){
+      getCategories().then(res=>{
+        console.log("商品分类",res);
+      })
+    },
   },
   components: {}
 };

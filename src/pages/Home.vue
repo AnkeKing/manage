@@ -46,7 +46,6 @@ export default {
   },
   methods: {
     select(parentTitle, child) {
-      console.log("query", this.$route.query.titleArr);
       this.$router.replace({
         name: child.path,
         query: {
