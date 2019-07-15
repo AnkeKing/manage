@@ -104,6 +104,7 @@
 
 .box .back-box .bottom-box .right-content-box .title-box span:first-child {
   font-weight: bold;
+  cursor: pointer;
 }
 
 .box .back-box .bottom-box .right-content-box .title-box span:last-child::after {

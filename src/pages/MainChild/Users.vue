@@ -414,8 +414,8 @@ export default {
       pageNum:1
     };
   },
-  mounted() {
-    this.getUsers(1,4);
+  created() {
+    this.getUsers(this.pageNum,this.pageSize);
   },
   methods: {
     //用户列表
@@ -494,6 +494,10 @@ export default {
 </script>
 
 <style  rel='stylesheet/scss' lang='scss' scoped>
-@import url("../../../static/css/users.min");
+.box{
+    display: flex;
+    flex-direction: column;
+    
+}
 </style>
 

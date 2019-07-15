@@ -72,6 +72,14 @@ export const deleteRoleRights = data => {//删除角色指定权限
 export const getGoods = data => {// 商品列表数据
     return http('goods', 'get', data);
 }
+export const addGoods = data => {//添加商品
+    return http('goods', 'post', data);
+}
+
+export const getCategoriesById = data => {//参数列表
+    return http('categories/'+data.id+'/attributes', 'get', data);
+}
+
 export const getCategories = data => {//商品分类列表
     return http('categories', 'get', {type:[1,2,3]});
 }

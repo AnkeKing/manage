@@ -13,7 +13,7 @@
               <div
                 slot="content"
                 class="select-btn"
-                :class="$route.name===child.path?'active':'default'"
+                :class="$route.name.indexOf(child.path)!=-1?'active':'default'"
                 v-for="(child,index) in obj.children"
                 @click="select(obj.authName,child)"
               >
@@ -24,7 +24,8 @@
           </Collapse>
         </div>
         <div class="right-content-box">
-          <div class="title-box" v-if="$route.name!='default'">
+          <div class="title-box" v-if="$route.name!=='default'">
+           <router-link to="/default"tag="span">首页</router-link>
             <span v-for="t in $route.query.titleArr">{{t}}</span>
           </div>
           <router-view></router-view>
@@ -49,7 +50,7 @@ export default {
       this.$router.replace({
         name: child.path,
         query: {
-          titleArr: ["首页", parentTitle, child.authName]
+          titleArr: [parentTitle, child.authName]
         }
       });
     }

@@ -29,6 +29,7 @@ const Store = new Vuex.Store({
             state.warnBool = obj.bool;
             state.warnText = obj.text;
         },
+        
     },
     actions: {
         showWarning(context,text){
@@ -39,6 +40,7 @@ const Store = new Vuex.Store({
         }
     },
     modules: {
+        
     },
     plugins: [createPersistedState({
         reducer(val) {

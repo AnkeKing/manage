@@ -1,15 +1,43 @@
 <template>
   <div class="box">
-    <h1>商品分类</h1>
+     <div class="search-box">
+      <Input
+        search
+        placeholder="favorite person"
+        class="search-input"
+        v-model="searchText"
+        @keydown.enter.native="toSearch"
+      />
+      <Button type="success" class="add-btn" @click="toAddGoods">添加商品</Button>
+    </div>
+    <Table :columns="columns1" :stripe="true" :data="goods" height="377"></Table>
+    <div class="page-box">
+      <Page
+        :total="goods_result.total"
+        :page-size="pageSize"
+        @on-page-size-change="changePageSize"
+        @on-change="changePage"
+        :page-size-opts="opts"
+        show-total
+        show-elevator
+        show-sizer
+      />
+    </div>
   </div>
 </template>
 
 <script>
-import {getGoods,} from '@/api/http';
+import { getGoods } from "@/api/http";
 export default {
   name: "Box",
   data() {
     return {
+      goods_result: [],
+      goods: [],
+      opts: [10, 20, 30, 40],
+      pageSize: 10,
+      pageNum: 1,
+      searchText:"",
       columns1: [
         {
           title: "#",
@@ -17,54 +45,21 @@ export default {
           width: 50
         },
         {
-          title: "姓名",
-          key: "username"
+          title: "商品名称",
+          key: "goods_name",
+          width: 370
         },
         {
-          title: "邮箱",
-          key: "email"
+          title: "商品价格（元）",
+          key: "goods_price"
         },
         {
-          title: "电话",
-          key: "mobile"
+          title: "商品重量",
+          key: "goods_weight"
         },
         {
           title: "创建日期",
-          key: "create_time"
-        },
-        {
-          title: "用户状态",
-          key: "mg_state",
-          render: (h, params) => {
-            // 重点
-            let _this = this;
-            return h("i-switch", {
-              //按钮的话是：button自行替换
-              props: {
-                //这里可以设置它的属性
-                value: params.row.mg_state, //设置它的值比如：true或false
-                disabled: false // 设置是否可以操作，变灰
-              },
-              on: {
-                //操作事件
-                input: function(event) {
-                  //这里会起到监听的作用
-                  if (event) {
-                    params.row.status = true;
-                  } else {
-                    params.row.status = false;
-                  }
-                },
-                "on-change": function() {
-                  //值发生了改变调用方法
-                  setUserState({
-                    uid: params.row.id,
-                    type: params.row.status
-                  });
-                }
-              }
-            });
-          }
+          key: "add_time"
         },
         {
           title: "操作",
@@ -225,39 +220,49 @@ export default {
       ]
     };
   },
-  created(){
-    this.getGoods(1,7);
+  created() {
+    this.getGoods(this.pageNum,this.pageSize);
   },
   methods: {
-      //商品数据列表
-      getGoods(pageNum,pageSize){
-          getGoods({
-              pageNum:pageNum,
-              pageSize:pageSize
-          }).then(res=>{
-              console.log("商品数据",res);
-          })
-      },
-    
-    //显示添加商品输入框
-    showModal() {
-      // this.username = "";
-      // this.password = "";
-      // this.email = "";
-      // this.mobile = "";
-      // this.modal1 = true;
+    //商品数据列表
+    getGoods(pageNum, pageSize) {
+      getGoods({
+        pagenum: pageNum,
+        pagesize: pageSize
+      }).then(res => {
+        console.log("商品数据", res);
+        this.goods_result = res;
+        this.goods = this.goods_result.goods;
+      });
+    },
+    changePageSize(pageSize) {
+      this.pageSize = pageSize;
+      this.getGoods(this.pageNum, this.pageSize);
+    },
+    changePage(pageNum) {
+      this.pageNum = pageNum;
+      this.getGoods(this.pageNum, this.pageSize);
+    },
+    toAddGoods() {
+      this.$router.replace({
+        name:"goods/addGoods",
+
+        query: {
+          titleArr:this.$route.query.titleArr
+        }
+      })
+      
     },
     //搜索
     toSearch() {
-      this.users_list = this.searchResult();
+      this.goods = this.searchResult();
     },
     searchResult() {
       var that = this;
-      return this.users_data.users.filter(function(v, i, a) {
-        return v.username.indexOf(that.searchText) != -1;
+      return this.goods_result.goods.filter(function(v, i, a) {
+        return v.goods_name.indexOf(that.searchText) != -1;
       });
-    },
-
+    }
   },
   components: {}
 };

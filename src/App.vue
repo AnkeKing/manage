@@ -2,18 +2,18 @@
   <div id="app">
     <king-loading></king-loading>
     <king-warning></king-warning>
-    <router-view/>
+    <router-view />
   </div>
 </template>
 
 <script>
 export default {
-  name: 'App'
-}
+  name: "App"
+};
 </script>
 
 <style>
-#app{
+#app {
   width: 100;
   height: 100vh;
   overflow: hidden;
@@ -23,7 +23,6 @@ html {
   width: 100%;
   height: 100%;
 }
-
 
 * {
   margin: 0px;
@@ -126,5 +125,39 @@ fieldset[disabled] .ivu-input {
   display: flex;
   justify-content: center;
   margin-top: 27px;
+}
+.search-box {
+  display: flex;
+  justify-content: flex-start;
+  padding: 0 20px 20px 20px;
+}
+.search-box .search-input {
+  margin-right: 7px;
+  width: 200px;
+}
+.search-box .add-btn {
+  background: rgb(102, 143, 108);
+  border: rgb(102, 143, 108);
+}
+.ivu-checkbox-checked .ivu-checkbox-inner {
+  border-color: rgba(246, 187, 66, 0.9);
+  background-color: rgba(246, 187, 66, 0.9);
+}
+.ivu-steps-item.ivu-steps-status-process .ivu-steps-head-inner {
+    border-color: rgba(246, 187, 66, 0.9);
+    background-color: rgba(246, 187, 66, 0.9);
+}
+.ivu-steps-item.ivu-steps-status-finish .ivu-steps-tail>i:after {
+    background:rgba(246, 187, 66, 0.9);
+}
+.ivu-steps-item.ivu-steps-status-finish .ivu-steps-head-inner span, .ivu-steps-item.ivu-steps-status-finish .ivu-steps-head-inner>.ivu-steps-icon {
+    color: rgba(246, 187, 66, 0.9);
+}
+.ivu-steps-item.ivu-steps-status-finish .ivu-steps-head-inner {
+    border-color: rgba(246, 187, 66, 0.9);
+}
+.ivu-steps {
+    width: 90%;
+    margin: 15px 0 15px 0
 }
 </style>

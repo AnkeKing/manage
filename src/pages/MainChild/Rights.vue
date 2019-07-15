@@ -1,6 +1,6 @@
 <template>
   <div class="box">
-    <Table :columns="columns1" :data="rights":stripe="true" height="377"></Table>
+    <Table :columns="columns1" :data="rights":stripe="true" height="422"></Table>
   </div>
 </template>
 

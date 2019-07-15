@@ -71,7 +71,7 @@ var router = new Router({
                 },
                 {
                   path: '/addGoods',
-                  name: 'addgoods',
+                  name: 'goods/addGoods',
                   component: AddGoods
                 }
               ]

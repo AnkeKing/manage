@@ -1,7 +1,7 @@
 <template>
   <div class="box">
     <Button type="success" class="add-btn" @click="showModal">添加角色</Button>
-    <Table :columns="columns1" :data="rolesList" height="377"></Table>
+    <Table :columns="columns1" :data="rolesList" height="422"></Table>
     <Modal v-model="modal1" title="添加角色" @on-ok="addRole">
       <div class="add-box">
         <p>角色名称:</p>
@@ -30,6 +30,7 @@ import {
   deleteRoleRights
 } from "../../api/http";
 import axios from "axios";
+import tree from "../../components/tree";
 export default {
   name: "Box",
   data() {
@@ -48,109 +49,16 @@ export default {
           width: 30,
           type: "expand",
           render: (h, params) => {
-            // console.log("params", params);
-            var parentArr = [];
-            var childArr = [];
-            var grandSonArr = [];
-            if (params.row.children.length > 0) {
-              params.row.children.map(item => {
-                parentArr.push(
-                  h(
-                    "Tag",
-                    {
-                      props: {
-                        color: "rgb(102, 143, 108)",
-                        closable: true,
-                        name: item.id
-                      },
-                      on: {
-                        "on-close": (val, name) => {
-                          console.log("关闭。。。", val, name);
-                          deleteRoleRights({
-                            roleId: params.row.id,
-                            rightId: name
-                          }).then(res => {
-                            console.log("删除指定权限", res);
-                            this.getRoles();
-                          });
-                        }
-                      }
-                    },
-                    item.authName
-                  )
-                );
-                item.children.map(child => {
-                  childArr.push(
-                    h(
-                      "Tag",
-                      {
-                        props: {
-                          color: "rgb(96, 133, 174)",
-                          closable: true,
-                          name: child.id
-                        },
-                        on: {
-                          "on-close": (val, name) => {
-                            console.log("关闭。。。", val, name);
-                            deleteRoleRights({
-                              roleId: params.row.id,
-                              rightId: name
-                            }).then(res => {
-                              console.log("删除指定权限", res);
-                              this.getRoles();
-                            });
-                          }
-                        }
-                      },
-                      child.authName
-                    )
-                  );
-                  child.children.map(grandSon => {
-                    grandSonArr.push(
-                      h(
-                        "Tag",
-                        {
-                          props: {
-                            color: "rgb(179, 131, 172)",
-                            closable: true,
-                            name: grandSon.id,
-                            size: "small"
-                          },
-                          on: {
-                            "on-close": (val, name) => {
-                              console.log("关闭。。。", val, name);
-                              deleteRoleRights({
-                                roleId: params.row.id,
-                                rightId: name
-                              }).then(res => {
-                                console.log("删除指定权限", res);
-                                this.getRoles();
-                              });
-                            }
-                          }
-                        },
-                        grandSon.authName
-                      )
-                    );
-                  });
-                });
-              });
-              return h("div",{style:{display:"flex",justifyContent:"center"}}, [
-                h("div",{style:{width:"100px"}},[parentArr]),
-                h("div",{style:{width:"100px"}},[childArr]),
-                h("div",{style:{width:"370px"}},[grandSonArr])]);
-            } else {
-              return h(
-                "div",
-                {
-                  style: {
-                    color: "rgb(179, 131, 172)",
-                    fontWeight: "bold"
-                  }
-                },
-                "此角色暂无任何权限"
-              );
-            }
+            return h(tree, {
+              props: {
+                row: params.row
+              },
+              on: {
+                getVal: val => {
+                  this.getRoles();
+                }
+              }
+            });
           }
         },
         {
@@ -464,7 +372,9 @@ export default {
       // console.log("拼接形成", this.rids);
     }
   },
-  components: {}
+  components: {
+    tree: tree
+  }
 };
 </script>
 
@@ -472,6 +382,4 @@ export default {
 @import url("../../../static/css/roles.min");
 </style>
 <style>
-.ivu-table-expanded-cell {
-}
 </style>
