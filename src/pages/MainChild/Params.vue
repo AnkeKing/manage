@@ -6,7 +6,9 @@
       <Cascader :data="categories" @on-change="getCascaderValue" change-on-select></Cascader>
     </div>
     <Tabs value="name1">
-      <TabPane label="动态参数" name="name1">标签一的内容</TabPane>
+      <TabPane label="动态参数" name="name1">
+        <!-- <Table :columns="columns1" :data="users_list"></Table> -->
+      </TabPane>
       <TabPane label="静态参数" name="name2">标签二的内容</TabPane>
     </Tabs>
   </div>
@@ -79,7 +81,7 @@ export default {
 </style>
 <style>
 .ivu-input-wrapper {
-    width: 270px;
-    margin-left: 20px;
+  width: 270px;
+  margin-left: 20px;
 }
 </style>
