@@ -135,7 +135,7 @@ fieldset[disabled] .ivu-input {
   margin-right: 7px;
   width: 200px;
 }
-.search-box .add-btn {
+.add-btn {
   background: rgb(102, 143, 108);
   border: rgb(102, 143, 108);
 }
@@ -159,5 +159,32 @@ fieldset[disabled] .ivu-input {
 .ivu-steps {
     width: 90%;
     margin: 15px 0 15px 0
+}
+.demo-tabs-style2
+  > .ivu-tabs.ivu-tabs-card
+  > .ivu-tabs-bar
+  .ivu-tabs-tab-active {
+  border-top: 1px solid rgba(164, 84, 110, 0.7);
+}
+.demo-tabs-style2
+  > .ivu-tabs.ivu-tabs-card
+  > .ivu-tabs-bar
+  .ivu-tabs-tab-active:before {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 1px;
+  background: rgba(164, 84, 110, 0.7);
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.ivu-tabs.ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-tab-active {
+  border-color: #dcdee2;
+  color: rgba(164, 84, 110, 0.7);
+}
+.ivu-cascader-menu .ivu-cascader-menu-item-active {
+  background-color: #f3f3f3;
+  color: rgba(164, 84, 110, 0.7);
 }
 </style>

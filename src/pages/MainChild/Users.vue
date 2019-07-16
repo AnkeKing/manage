@@ -228,11 +228,11 @@ export default {
                           mobile: mobile
                         }).then(res => {
                           this.getUsers(this.pageNum,this.pageSize);
-                          // this.resetUsersList(params.index, "edit", res);
                         });
                       },
                       onCancel: () => {}
                     });
+                    
                   }
                 }
               }),
@@ -437,20 +437,6 @@ export default {
         console.log("用户列表", this.users_data);
       });
     },
-    //减少请求
-    resetUsersList(index, type, res) {
-      var users_list = JSON.parse(JSON.stringify(this.users_list));
-      if (type === "delete") {
-        users_list.splice(index, 1);
-      } else if (type === "edit") {
-        users_list[index].email = res.email;
-        users_list[index].mobile = res.mobile;
-      } else if (type === "setRole") {
-        users_list[index].role_name = res.roleName;
-      }
-      this.users_list = users_list;
-      this.users_data.users = this.users_list;
-    },
     //搜索
     toSearch() {
       this.users_list = this.searchResult();
@@ -497,7 +483,16 @@ export default {
 .box{
     display: flex;
     flex-direction: column;
-    
 }
 </style>
+<style>
+.my-div{
+  display: flex;
+  justify-content: space-between;
+}
+.ivu-input-wrapper {
+    width: 80%;
+}
+</style>
+
 

@@ -1,22 +1,85 @@
 <template>
- <div class="box">
-<h1>分类参数</h1>
- </div>
+  <div class="box">
+    <Alert type="warning" show-icon>注意:只允许为第三级分类设置参数</Alert>
+    <div class="classify-box">
+      <a>请选择商品分类</a>
+      <Cascader :data="categories" @on-change="getCascaderValue" change-on-select></Cascader>
+    </div>
+    <Tabs value="name1">
+      <TabPane label="动态参数" name="name1">标签一的内容</TabPane>
+      <TabPane label="静态参数" name="name2">标签二的内容</TabPane>
+    </Tabs>
+  </div>
 </template>
 
 <script>
+import { getCategories } from "../../api/http";
 export default {
-name:'Box',
- data() {
- return {
-
- }
- },
- components: {
-
- }
-}
+  name: "Box",
+  data() {
+    return {
+      categories: [],
+      classify: ""
+    };
+  },
+  created() {
+    this.getCategories();
+  },
+  methods: {
+    //商品分类列表
+    getCategories() {
+      getCategories().then(res => {
+        console.log("商品分类", res);
+        this.FOR(res);
+        this.categories = res;
+      });
+    },
+    FOR(newData) {
+      for (var r in newData) {
+        newData[r].label = newData[r].cat_name;
+        if (newData[r].children) {
+          this.FOR(newData[r].children);
+        }
+      }
+    }, //获取并处理多级联动选择的值
+    getCascaderValue(value, selectedData) {
+      // console.log("响应值", selectedData);
+      this.classify = "";
+      for (var s in selectedData) {
+        if (s != selectedData.length - 1) {
+          this.classify += selectedData[s].cat_id + ",";
+        } else {
+          this.classify += selectedData[s].cat_id;
+        }
+      }
+    }
+  },
+  components: {}
+};
 </script>
 
 <style  rel='stylesheet/scss' lang='scss' scoped>
+.box {
+  .classify-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    a {
+      font-size: 13px;
+    }
+  }
+  .ivu-tabs {
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 10px;
+  }
+}
+</style>
+<style>
+.ivu-input-wrapper {
+    width: 270px;
+    margin-left: 20px;
+}
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div class="box">
-     <div class="search-box">
+    <div class="search-box">
       <Input
         search
         placeholder="favorite person"
@@ -8,7 +8,7 @@
         v-model="searchText"
         @keydown.enter.native="toSearch"
       />
-      <Button type="success" class="add-btn" @click="toAddGoods">添加商品</Button>
+      <Button type="success" class="add-btn" @click="toAddGoods('添加商品')">添加商品</Button>
     </div>
     <Table :columns="columns1" :stripe="true" :data="goods" height="377"></Table>
     <div class="page-box">
@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { getGoods } from "@/api/http";
+import { getGoods, deleteGoods } from "@/api/http";
 export default {
   name: "Box",
   data() {
@@ -37,7 +37,7 @@ export default {
       opts: [10, 20, 30, 40],
       pageSize: 10,
       pageNum: 1,
-      searchText:"",
+      searchText: "",
       columns1: [
         {
           title: "#",
@@ -82,101 +82,7 @@ export default {
                 },
                 on: {
                   click: () => {
-                    let email = params.row.email;
-                    let mobile = params.row.mobile;
-                    this.$Modal.confirm({
-                      render: h => {
-                        return h("div", [
-                          h(
-                            "div",
-                            {
-                              class: "top-div",
-                              style: {
-                                fontWeight: "bold"
-                              }
-                            },
-                            [
-                              h(
-                                "a",
-                                {
-                                  style: {
-                                    fontSize: "18px"
-                                  }
-                                },
-                                "编辑用户"
-                              )
-                            ]
-                          ),
-                          h(
-                            "div",
-                            {
-                              class: "my-div"
-                            },
-                            [
-                              h("a", "用户名 :"),
-                              h("Input", {
-                                props: {
-                                  value: params.row.username,
-                                  autofocus: true,
-                                  disabled: true
-                                }
-                              })
-                            ]
-                          ),
-                          h(
-                            "div",
-                            {
-                              class: "my-div"
-                            },
-                            [
-                              h("a", "邮箱 :"),
-                              h("Input", {
-                                props: {
-                                  value: params.row.email,
-                                  autofocus: true
-                                },
-                                on: {
-                                  input: val => {
-                                    email = val;
-                                  }
-                                }
-                              })
-                            ]
-                          ),
-                          h(
-                            "div",
-                            {
-                              class: "my-div"
-                            },
-                            [
-                              h("a", "电话 :"),
-                              h("Input", {
-                                props: {
-                                  value: params.row.mobile,
-                                  autofocus: true
-                                },
-                                on: {
-                                  input: val => {
-                                    mobile = val;
-                                  }
-                                }
-                              })
-                            ]
-                          )
-                        ]);
-                      },
-                      onOk: () => {
-                        editUser({
-                          id: params.row.id,
-                          email: email,
-                          mobile: mobile
-                        }).then(res => {
-                          this.getUsers(this.pageNum, this.pageSize);
-                          // this.resetUsersList(params.index, "edit", res);
-                        });
-                      },
-                      onCancel: () => {}
-                    });
+                    this.toAddGoods("编辑商品",params.row);
                   }
                 }
               }),
@@ -196,19 +102,13 @@ export default {
                 },
                 on: {
                   click: () => {
-                    // this.remove(params.index);
-                    console.log("this", params);
                     this.$Modal.confirm({
                       title: "提示",
-                      content: "<p>此操作将永久删除该用户，是否继续？</p>",
+                      content: "<p>此操作将永久删除该商品，是否继续？</p>",
                       okText: "OK",
                       cancelText: "Cancel",
                       onOk: () => {
-                        deleteUser({
-                          id: params.row.id
-                        }).then(res => {
-                          this.getUsers(this.pageNum, this.pageSize);
-                        });
+                        this.deleteGoods(params.row.goods_id);
                       }
                     });
                   }
@@ -221,7 +121,7 @@ export default {
     };
   },
   created() {
-    this.getGoods(this.pageNum,this.pageSize);
+    this.getGoods(this.pageNum, this.pageSize);
   },
   methods: {
     //商品数据列表
@@ -230,9 +130,20 @@ export default {
         pagenum: pageNum,
         pagesize: pageSize
       }).then(res => {
-        console.log("商品数据", res);
-        this.goods_result = res;
+        // console.log("商品数据", res);
+        var goods_result = res;
+        for (var g in goods_result.goods) {
+          goods_result.goods[g].add_time = new Date(
+            goods_result.goods[g].add_time
+          ).toLocaleDateString();
+        }
+        this.goods_result = goods_result;
         this.goods = this.goods_result.goods;
+      });
+    },
+    deleteGoods(id) {
+      deleteGoods({ id: id }).then(res => {
+        this.getGoods(this.pageNum, this.pageSize);
       });
     },
     changePageSize(pageSize) {
@@ -243,15 +154,25 @@ export default {
       this.pageNum = pageNum;
       this.getGoods(this.pageNum, this.pageSize);
     },
-    toAddGoods() {
-      this.$router.replace({
-        name:"goods/addGoods",
-
-        query: {
-          titleArr:this.$route.query.titleArr
-        }
-      })
-      
+    toAddGoods(type,row) {
+      if (type === "添加商品") {
+        this.$router.replace({
+          name: "goods/addGoods",
+          query: {
+            titleArr: this.$route.query.titleArr,
+            btnType: type
+          }
+        });
+      } else {
+        this.$router.replace({
+          name: "goods/addGoods",
+          query: {
+            titleArr: this.$route.query.titleArr,
+            btnType: type,
+            goods_data:row
+          }
+        });
+      }
     },
     //搜索
     toSearch() {

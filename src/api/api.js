@@ -22,7 +22,6 @@ Service.interceptors.request.use(config => {
 
 Service.interceptors.response.use(response => {
     store.commit("setLoading", false);
-
     return response;
 }, error => {
     store.commit("setLoading", false);
@@ -36,6 +35,7 @@ function http(url, method, data) {
         data: data,
         params:data
     }).then(res => {
+        console.log("---------",res)
         if (res) {
             if (res.data.meta.status === 200||res.data.meta.status === 201||res.data.meta.status === 204) {
                 Message.success(res.data.meta.msg)
