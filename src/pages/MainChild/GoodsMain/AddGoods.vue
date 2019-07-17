@@ -103,7 +103,7 @@ import { quillEditor } from "vue-quill-editor"; //调用编辑器
 import "quill/dist/quill.core.css";
 import "quill/dist/quill.snow.css";
 import "quill/dist/quill.bubble.css";
-import { addGoods, editGoods, getCategories } from "../../../api/http";
+import { addGoods, editGoods} from "../../../api/http";
 export default {
   name: "Box",
   data() {
@@ -183,32 +183,15 @@ export default {
       });
     },
     //商品分类列表
-    getCategories() {
-      getCategories().then(res => {
-        console.log("商品分类", res);
-        this.FOR(res);
-        this.categories = res;
-      });
-    },
-    FOR(newData) {
-      for (var r in newData) {
-        newData[r].label = newData[r].cat_name;
-        if (newData[r].children) {
-          this.FOR(newData[r].children);
-        }
-      }
+    getCategories(){
+      this.$store.dispatch("getCategories").then(res=>{
+        this.categories=res;
+      })
     },
     //获取并处理多级联动选择的值
     getCascaderValue(value, selectedData) {
       // console.log("响应值", selectedData);
-      this.classify = "";
-      for (var s in selectedData) {
-        if (s != selectedData.length - 1) {
-          this.classify += selectedData[s].cat_id + ",";
-        } else {
-          this.classify += selectedData[s].cat_id;
-        }
-      }
+      this.classify =this.$store.getters.classifyArr(selectedData);
     },
     handleView(name) {
       this.imgName = name;

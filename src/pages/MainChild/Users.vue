@@ -286,13 +286,26 @@ export default {
                 },
                 on: {
                   click: () => {
+                    var rid="";
                     getRoles().then(res => {
                       this.rolesList = res;
+                      this.rolesList.map(item => {
+                        if (item.roleName === params.row.role_name) {
+                          rid = item.id;
+                        }
+                      });
                     });
-                    var rid = "";
+                    console.log("this.parent",this.$parent)
                     this.$Modal.confirm({
                       render: h => {
-                        return h("div", [
+                        return h("div", 
+                        {
+                            style:{
+                              width: "60%",
+                              margin: "0 auto"
+                            }
+                          },[
+                          
                           h(
                             "div",
                             {
@@ -386,6 +399,7 @@ export default {
                           id: params.row.id,
                           rid: rid
                         }).then(res => {
+                          
                           getRoleById({
                             id: res.rid
                           }).then(res => {
@@ -480,18 +494,18 @@ export default {
 </script>
 
 <style  rel='stylesheet/scss' lang='scss' scoped>
-.box{
-    display: flex;
-    flex-direction: column;
+.box {
+  display: flex;
+  flex-direction: column;
 }
 </style>
 <style>
-.my-div{
+.my-div {
   display: flex;
   justify-content: space-between;
 }
 .ivu-input-wrapper {
-    width: 80%;
+  width: 80%;
 }
 </style>
 

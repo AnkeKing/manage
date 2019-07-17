@@ -84,9 +84,14 @@ export const deleteGoods = data => {//删除商品
 export const editGoods = data => {//编辑提交商品
     return http('goods/'+data.id, 'put', data);
 }
+
 export const getCategories = data => {//商品分类列表
     return http('categories', 'get', {type:[1,2,3]});
 }
+export const addCategories = data => {//添加分类
+    return http('categories', 'post',data);
+}
+
 export const syncGoodsAttr = data => {//同步商品属性
     return http('goods/'+data.id+'/attributes', 'put', data);
 }

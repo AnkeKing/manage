@@ -2,11 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import router from '../router/index';
 import createPersistedState from "vuex-persistedstate"
-// import {
-//     getPersonalData, getPersonalDataSecond,
-//     getGoodsColl, getGoodsDetail, getShopCarData, searchGoodsList, dealerColl,
-//     addGoodsColl, delGoodsColl
-// } from "../api/send";
+import {getCategories} from '../api/http';
 Vue.use(Vuex)
 
 const Store = new Vuex.Store({
@@ -17,6 +13,17 @@ const Store = new Vuex.Store({
         token: ""
     },
     getters: {
+        classifyArr:(state)=>(selectedData)=>{
+            var classify="";
+            for (var s in selectedData) {
+                if (s != selectedData.length - 1) {
+                classify += selectedData[s].cat_id + ",";
+                } else {
+                classify += selectedData[s].cat_id;
+                }
+            }
+            return classify;
+        }
     },
     mutations: {
         setToken(state, token){
@@ -37,8 +44,37 @@ const Store = new Vuex.Store({
             setTimeout(function(){
                 context.commit("setWarning",{bool:false,text:""});
             },1777)
-        }
-    },
+        },
+         //商品分类列表
+        getCategories({dispatch}) {
+            return  getCategories().then(res => {
+                console.log("商品分类", res);
+                dispatch("FOR",res);
+                return res;
+            });
+        },
+        FOR({dispatch},newData) {
+            for (var r in newData) {
+                newData[r].label = newData[r].cat_name;
+                if (newData[r].cat_level === 0) {
+                    newData[r].font_level = "一级";
+                } else if (newData[r].cat_level === 1) {
+                    newData[r].font_level = "二级";
+                } else {
+                    newData[r].font_level = "三级";
+                }
+                if (!newData[r].cat_deleted) {
+                    newData[r].valid = "有效";
+                } else {
+                    newData[r].valid = "无效";
+                }
+                if (newData[r].children) {
+                    dispatch("FOR",newData[r].children);
+                }
+            }
+            
+        }, //获取并处理多级联动选择的值
+        },
     modules: {
         
     },

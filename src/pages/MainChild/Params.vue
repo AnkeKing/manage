@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { getCategories } from "../../api/http";
+import { } from "../../api/http";
 export default {
   name: "Box",
   data() {
@@ -28,33 +28,16 @@ export default {
     this.getCategories();
   },
   methods: {
-    //商品分类列表
-    getCategories() {
-      getCategories().then(res => {
-        console.log("商品分类", res);
-        this.FOR(res);
-        this.categories = res;
-      });
+    getCategories(){
+      this.$store.dispatch("getCategories").then(res=>{
+        this.categories=res;
+      })
     },
-    FOR(newData) {
-      for (var r in newData) {
-        newData[r].label = newData[r].cat_name;
-        if (newData[r].children) {
-          this.FOR(newData[r].children);
-        }
-      }
-    }, //获取并处理多级联动选择的值
+    //获取并处理多级联动选择的值
     getCascaderValue(value, selectedData) {
       // console.log("响应值", selectedData);
-      this.classify = "";
-      for (var s in selectedData) {
-        if (s != selectedData.length - 1) {
-          this.classify += selectedData[s].cat_id + ",";
-        } else {
-          this.classify += selectedData[s].cat_id;
-        }
-      }
-    }
+      this.classify =this.$store.getters.classifyArr(selectedData);
+    },
   },
   components: {}
 };
