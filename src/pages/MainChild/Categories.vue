@@ -1,20 +1,20 @@
 <template>
-  <div class="box">
+  <div class="categories-box">
     <Button type="success" class="add-btn" @click="showModal">添加分类</Button>
-    <Modal v-model="modal1" title="添加角色" @on-ok="toAddCategories">
+    <Modal v-model="modal1" title="添加分类" @on-ok="toAddCategories">
       <div class="add-box">
         <p>分类名称:</p>
         <Input placeholder="classifyName" v-model="classifyName" />
       </div>
       <div class="add-box">
         <p>分类:</p>
-        <Cascader :data="categories" @on-change="getCascaderValue" change-on-select></Cascader>
+        <Cascader :data="selectCategories" @on-change="getCascaderValue" change-on-select></Cascader>
       </div>
     </Modal>
-    <Table :columns="columns1" height="322" :data="categories"></Table>
+    <Table :columns="columns1" height="422" :data="categories"></Table>
     <!-- <div class="page-box">
       <Page
-        :total="users_data.total"
+        :total="categories.length"
         :page-size="pageSize"
         @on-page-size-change="changePageSize"
         @on-change="changePage"
@@ -28,16 +28,24 @@
 </template>
 
 <script>
-import { getCategories,addCategories } from "../../api/http";
+import {
+  getCategories,
+  addCategories,
+  editCategories,
+  deleteCategories
+} from "../../api/http";
 window.selfs = {};
 export default {
-  name: "Box",
+  name: "Categories-box",
   data() {
     return {
       categories: [],
-      modal1:false,
-      classify:"",
-      classifyName:"",
+      selectCategories: [],
+      modal1: false,
+      cat_pid: "",
+      classify: "",
+      level: "",
+      classifyName: "",
       columns1: [
         {
           width: 30,
@@ -79,8 +87,7 @@ export default {
                 },
                 on: {
                   click: () => {
-                    let email = params.row.email;
-                    let mobile = params.row.mobile;
+                    var cat_name = "";
                     this.$Modal.confirm({
                       render: h => {
                         return h("div", [
@@ -100,7 +107,7 @@ export default {
                                     fontSize: "18px"
                                   }
                                 },
-                                "编辑用户"
+                                "修改商品分类"
                               )
                             ]
                           ),
@@ -110,51 +117,15 @@ export default {
                               class: "my-div"
                             },
                             [
-                              h("a", "用户名 :"),
+                              h("a", "分类名称 :"),
                               h("Input", {
                                 props: {
-                                  value: params.row.username,
-                                  autofocus: true,
-                                  disabled: true
-                                }
-                              })
-                            ]
-                          ),
-                          h(
-                            "div",
-                            {
-                              class: "my-div"
-                            },
-                            [
-                              h("a", "邮箱 :"),
-                              h("Input", {
-                                props: {
-                                  value: params.row.email,
+                                  value: params.row.cat_name,
                                   autofocus: true
                                 },
                                 on: {
                                   input: val => {
-                                    email = val;
-                                  }
-                                }
-                              })
-                            ]
-                          ),
-                          h(
-                            "div",
-                            {
-                              class: "my-div"
-                            },
-                            [
-                              h("a", "电话 :"),
-                              h("Input", {
-                                props: {
-                                  value: params.row.mobile,
-                                  autofocus: true
-                                },
-                                on: {
-                                  input: val => {
-                                    mobile = val;
+                                    cat_name = val;
                                   }
                                 }
                               })
@@ -163,12 +134,11 @@ export default {
                         ]);
                       },
                       onOk: () => {
-                        editUser({
-                          id: params.row.id,
-                          email: email,
-                          mobile: mobile
+                        editCategories({
+                          id: params.row.cat_id,
+                          cat_name: cat_name
                         }).then(res => {
-                          this.getUsers(this.pageNum, this.pageSize);
+                          this.getCategories();
                         });
                       },
                       onCancel: () => {}
@@ -192,18 +162,16 @@ export default {
                 },
                 on: {
                   click: () => {
-                    // this.remove(params.index);
-                    console.log("this", params);
                     this.$Modal.confirm({
                       title: "提示",
-                      content: "<p>此操作将永久删除该用户，是否继续？</p>",
+                      content: "<p>此操作将永久删除该分类，是否继续？</p>",
                       okText: "OK",
                       cancelText: "Cancel",
                       onOk: () => {
-                        deleteUser({
-                          id: params.row.id
+                        deleteCategories({
+                          id: params.row.cat_pid
                         }).then(res => {
-                          this.getUsers(this.pageNum, this.pageSize);
+                          this.getCategories();
                         });
                       }
                     });
@@ -213,7 +181,10 @@ export default {
             ]);
           }
         }
-      ]
+      ],
+      opts: [2, 4, 6, 8],
+      pageSize: 4,
+      pageNum: 1
     };
   },
   created() {
@@ -222,24 +193,26 @@ export default {
   },
   methods: {
     //商品分类列表
-    getCategories(){
-      this.$store.dispatch("getCategories").then(res=>{
-        this.categories=res;
-      })
+    getCategories() {
+      this.$store.dispatch("getCategories", { type: 3 }).then(res => {
+        this.categories = res;
+      });
+      this.$store.dispatch("getCategories", { type: 2 }).then(res => {
+        this.selectCategories = res;
+      });
     },
     toAddCategories() {
-      console.log();
-      // addCategories({
-      //   cat_pid :
-      //   cat_name:this.classifyName,
-      //   cat_level
-      // }).then(res=>{
-      //   console.log("添加分类",res)
-      // })
+      addCategories({
+        cat_pid: this.cat_pid,
+        cat_name: this.classifyName,
+        cat_level: this.level
+      }).then(res => {
+        this.getCategories();
+      });
     },
     paintTable(table_data, h) {
       // if (table_data.children) {
-        return this.returnTable(table_data, h);
+      return this.returnTable(table_data, h);
       // }
     },
     returnTable(table_data, h) {
@@ -290,8 +263,7 @@ export default {
                     },
                     on: {
                       click: () => {
-                        let email = params.row.email;
-                        let mobile = params.row.mobile;
+                        var cat_name = "";
                         this.$Modal.confirm({
                           render: h => {
                             return h("div", [
@@ -311,7 +283,7 @@ export default {
                                         fontSize: "18px"
                                       }
                                     },
-                                    "编辑用户"
+                                    "修改商品分类"
                                   )
                                 ]
                               ),
@@ -321,51 +293,15 @@ export default {
                                   class: "my-div"
                                 },
                                 [
-                                  h("a", "用户名 :"),
+                                  h("a", "分类名称 :"),
                                   h("Input", {
                                     props: {
-                                      value: params.row.username,
-                                      autofocus: true,
-                                      disabled: true
-                                    }
-                                  })
-                                ]
-                              ),
-                              h(
-                                "div",
-                                {
-                                  class: "my-div"
-                                },
-                                [
-                                  h("a", "邮箱 :"),
-                                  h("Input", {
-                                    props: {
-                                      value: params.row.email,
+                                      value: params.row.cat_name,
                                       autofocus: true
                                     },
                                     on: {
                                       input: val => {
-                                        email = val;
-                                      }
-                                    }
-                                  })
-                                ]
-                              ),
-                              h(
-                                "div",
-                                {
-                                  class: "my-div"
-                                },
-                                [
-                                  h("a", "电话 :"),
-                                  h("Input", {
-                                    props: {
-                                      value: params.row.mobile,
-                                      autofocus: true
-                                    },
-                                    on: {
-                                      input: val => {
-                                        mobile = val;
+                                        cat_name = val;
                                       }
                                     }
                                   })
@@ -374,12 +310,11 @@ export default {
                             ]);
                           },
                           onOk: () => {
-                            editUser({
-                              id: params.row.id,
-                              email: email,
-                              mobile: mobile
+                            editCategories({
+                              id: params.row.cat_id,
+                              cat_name: cat_name
                             }).then(res => {
-                              this.getUsers(this.pageNum, this.pageSize);
+                              this.getCategories();
                             });
                           },
                           onCancel: () => {}
@@ -403,18 +338,17 @@ export default {
                     },
                     on: {
                       click: () => {
-                        // this.remove(params.index);
-                        console.log("this", params);
                         this.$Modal.confirm({
                           title: "提示",
-                          content: "<p>此操作将永久删除该用户，是否继续？</p>",
+                          content: "<p>此操作将永久删除该分类，是否继续？</p>",
                           okText: "OK",
                           cancelText: "Cancel",
                           onOk: () => {
-                            deleteUser({
-                              id: params.row.id
+                            console.log("删除---", params.row);
+                            deleteCategories({
+                              id: params.row.cat_id
                             }).then(res => {
-                              this.getUsers(this.pageNum, this.pageSize);
+                              this.getCategories();
                             });
                           }
                         });
@@ -428,8 +362,9 @@ export default {
         }
       });
     },
-    returnTableStyle(children) {//无效
-      console.log("table_data.children",children)
+    returnTableStyle(children) {
+      //无效
+      console.log("table_data.children", children);
       if (children) {
         return "expand";
       } else {
@@ -438,16 +373,28 @@ export default {
     },
     //显示添加角色输入框
     showModal() {
-      this.classify="";
+      this.classify = "";
       this.classifyName = "";
       this.modal1 = true;
     },
     //获取并处理多级联动选择的值
     getCascaderValue(value, selectedData) {
-      console.log("响应值11", value);
-      console.log("响应值22", selectedData);
-      // this.classify =this.$store.getters.classifyArr(selectedData);
+      console.log(value, selectedData);
+      this.cat_pid = selectedData[selectedData.length - 1].cat_id;
+      this.level = selectedData[selectedData.length - 1].cat_level + 1;
+      console.log("selectedData", selectedData);
     },
+    expandChange(value) {
+      console.log("响应值222", value);
+    },
+    changePageSize(pageSize) {
+      this.pageSize = pageSize;
+      this.getUsers(this.pageNum, this.pageSize);
+    },
+    changePage(pageNum) {
+      this.pageNum = pageNum;
+      this.getUsers(this.pageNum, this.pageSize);
+    }
   },
   components: {}
 };
@@ -466,10 +413,117 @@ td.ivu-table-expanded-cell {
   padding-left: 12px;
   background: #f8f8f9;
 }
+.el-cascader-node.in-active-path,
+.el-cascader-node.is-active,
+.el-cascader-node.is-selectable.in-checked-path {
+  color: rgba(164, 84, 110, 0.7);
+}
+.el-cascader .el-input .el-input__inner:focus,
+.el-cascader .el-input.is-focus .el-input__inner {
+  border-color: rgba(164, 84, 110, 0.7);
+}
 
-.ivu-cascader-rel {
-    display: inline-block;
-    width: 400px;
-    position: relative;
+.addgoods-box .ivu-card-body {
+  padding: 10px;
+}
+.addgoods-box .ivu-col-span-12 {
+  display: block;
+  width: 100%;
+}
+.addgoods-box .ivu-row {
+  width: 100%;
+}
+.addgoods-box .demo-tabs-style1 {
+  background: #eee;
+  padding: 16px;
+}
+.addgoods-box .demo-tabs-style1 > .ivu-tabs-card > .ivu-tabs-content {
+  margin-top: -16px;
+}
+
+.addgoods-box
+  .demo-tabs-style1
+  > .ivu-tabs-card
+  > .ivu-tabs-content
+  > .ivu-tabs-tabpane {
+  background: #fff;
+  padding: 16px;
+}
+
+.addgoods-box
+  .demo-tabs-style1
+  > .ivu-tabs.ivu-tabs-card
+  > .ivu-tabs-bar
+  .ivu-tabs-tab {
+  border-color: transparent;
+}
+
+.addgoods-box
+  .demo-tabs-style1
+  > .ivu-tabs-card
+  > .ivu-tabs-bar
+  .ivu-tabs-tab-active {
+  border-color: #fff;
+}
+.addgoods-box
+  .demo-tabs-style2
+  > .ivu-tabs.ivu-tabs-card
+  > .ivu-tabs-bar
+  .ivu-tabs-tab {
+  border-radius: 0;
+  background: #fff;
+}
+.addgoods-box .ivu-tabs-nav-scroll {
+  display: flex;
+  justify-content: center;
+}
+
+.addgoods-box .ivu-input-wrapper {
+  width: 100%;
+  float: right;
+}
+.addgoods-box .ivu-cascader {
+  width: 75%;
+}
+
+.addgoods-box .ivu-upload-drag {
+  width: 90px;
+}
+
+.addgoods-box .demo-upload-list {
+  display: inline-block;
+  width: 90px;
+  height: 90px;
+  text-align: center;
+  line-height: 90px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #fff;
+  position: relative;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  margin-right: 4px;
+}
+.addgoods-box .demo-upload-list img {
+  width: 100%;
+  height: 100%;
+}
+.addgoods-box .demo-upload-list-cover {
+  display: none;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+.addgoods-box .demo-upload-list:hover .demo-upload-list-cover {
+  display: block;
+}
+.addgoods-box .demo-upload-list-cover i {
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  margin: 0 2px;
 }
 </style>

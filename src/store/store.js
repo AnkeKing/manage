@@ -2,60 +2,81 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import router from '../router/index';
 import createPersistedState from "vuex-persistedstate"
-import {getCategories} from '../api/http';
+import { getCategories,getCategoriesById,queryParams } from '../api/http';
 Vue.use(Vuex)
 
 const Store = new Vuex.Store({
     state: {
         loading: false,
-        warnBool:false,
-        warnText:"",
+        warnBool: false,
+        warnText: "",
         token: ""
     },
     getters: {
-        classifyArr:(state)=>(selectedData)=>{
-            var classify="";
+        classifyArr: (state) => (selectedData) => {
+            var classify = "";
             for (var s in selectedData) {
                 if (s != selectedData.length - 1) {
-                classify += selectedData[s].cat_id + ",";
+                    classify += selectedData[s].cat_id + ",";
                 } else {
-                classify += selectedData[s].cat_id;
+                    classify += selectedData[s].cat_id;
                 }
             }
             return classify;
         }
     },
     mutations: {
-        setToken(state, token){
+        setToken(state, token) {
             state.token = token;
         },
         setLoading(state, bool) {
             state.loading = bool;
         },
-        setWarning(state,obj) {
+        setWarning(state, obj) {
             state.warnBool = obj.bool;
             state.warnText = obj.text;
         },
-        
+
     },
     actions: {
-        showWarning(context,text){
-            context.commit("setWarning",{bool:true,text:text});
-            setTimeout(function(){
-                context.commit("setWarning",{bool:false,text:""});
-            },1777)
+        showWarning(context, text) {
+            context.commit("setWarning", { bool: true, text: text });
+            setTimeout(function () {
+                context.commit("setWarning", { bool: false, text: "" });
+            }, 1777)
         },
-         //商品分类列表
-        getCategories({dispatch}) {
-            return  getCategories().then(res => {
-                console.log("商品分类", res);
-                dispatch("FOR",res);
+        //参数列表
+        getCategoriesById({dispatch},obj){
+            return getCategoriesById({
+                id:obj.id,
+                sel:obj.sel
+            }).then(res=>{
+                console.log("参数列表",res);
+                return res;
+            })
+        },
+        //根据ID查询参数
+        queryParams({dispatch},obj){
+            return queryParams({
+                id:obj.id,
+                // attrId:obj.attrId,
+                sel:obj.sel
+            }).then(res=>{
+                console.log("查询参数",res);
+                return res;
+            })
+        },
+        //商品分类列表
+        getCategories({ dispatch }, obj) {
+            return getCategories({ type: obj.type }).then(res => {
+                dispatch("FOR", res);
                 return res;
             });
         },
-        FOR({dispatch},newData) {
+        FOR({ dispatch }, newData) {
             for (var r in newData) {
                 newData[r].label = newData[r].cat_name;
+                newData[r].value = newData[r].cat_id;
                 if (newData[r].cat_level === 0) {
                     newData[r].font_level = "一级";
                 } else if (newData[r].cat_level === 1) {
@@ -69,14 +90,14 @@ const Store = new Vuex.Store({
                     newData[r].valid = "无效";
                 }
                 if (newData[r].children) {
-                    dispatch("FOR",newData[r].children);
+                    dispatch("FOR", newData[r].children);
                 }
             }
-            
+
         }, //获取并处理多级联动选择的值
-        },
+    },
     modules: {
-        
+
     },
     plugins: [createPersistedState({
         reducer(val) {

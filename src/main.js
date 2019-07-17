@@ -9,7 +9,10 @@ import $ from 'jquery';
 import "bootstrap/dist/css/bootstrap.min.css";
 import iView from 'iview';
 import 'iview/dist/styles/iview.css';
+import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
 
+Vue.use(ElementUI)
 Vue.use(iView);
 
 import loading from '../src/components/Loading';

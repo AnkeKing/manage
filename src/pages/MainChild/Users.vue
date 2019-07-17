@@ -399,7 +399,6 @@ export default {
                           id: params.row.id,
                           rid: rid
                         }).then(res => {
-                          
                           getRoleById({
                             id: res.rid
                           }).then(res => {

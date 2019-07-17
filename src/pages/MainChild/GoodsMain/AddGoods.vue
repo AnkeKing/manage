@@ -1,5 +1,5 @@
 <template>
-  <div class="box">
+  <div class="addgoods-box">
     <div class="title-box">
       <Card :bordered="false">
         <p>
@@ -33,14 +33,31 @@
             </div>
             <div class="input-box">
               <a>商品分类</a>
-              <Cascader :data="categories" @on-change="getCascaderValue" change-on-select></Cascader>
+              <Cascader
+                :data="categories"
+                @on-visible-change="getParams"
+                @on-change="getCascaderValue"
+                change-on-select
+              ></Cascader>
             </div>
           </TabPane>
-          <TabPane :label="stepArr[1].title" class="center-box">
-            <Input v-model="params" placeholder="params" clearable style="width: 75%" />
+          <TabPane :label="stepArr[1].title" class="scroll-box">
+            <div class="params-div" v-for="(q,index) in queryParams"v-if="queryParams.length>0" :key="index">
+              <a>{{q.attr_name}}</a>
+              <Tag closable color="rgba(246, 187, 66, 0.9)":key="t"v-for="t in returnSplit(q.attr_vals)">{{t}}</Tag>
+            </div>
+            <div class="warn-div"v-if="queryParams.length==0">
+              无商品参数
+            </div>
           </TabPane>
-          <TabPane :label="stepArr[2].title" class="center-box">
-            <Input v-model="attr" placeholder="attrs" clearable style="width: 75%" />
+          <TabPane :label="stepArr[2].title" class="scroll-box">
+            <div class="attr-div"v-if="goodsParams.length>0" v-for="(g,index) in goodsParams" :key="index">
+              <a>{{g.attr_name}}</a>
+              <Input :value="g.attr_vals" clearable style="width: 75%" />
+            </div>
+            <div class="warn-div"v-if="goodsParams.length==0">
+              无商品属性
+            </div>
           </TabPane>
           <TabPane :label="stepArr[3].title" class="center-box">
             <div class="demo-upload-list" v-for="item in uploadList">
@@ -103,9 +120,9 @@ import { quillEditor } from "vue-quill-editor"; //调用编辑器
 import "quill/dist/quill.core.css";
 import "quill/dist/quill.snow.css";
 import "quill/dist/quill.bubble.css";
-import { addGoods, editGoods} from "../../../api/http";
+import { addGoods, editGoods } from "../../../api/http";
 export default {
-  name: "Box",
+  name: "Addgoods-box",
   data() {
     return {
       editorOption: {},
@@ -124,6 +141,9 @@ export default {
       categories: [],
       upload_data: {},
       goods_query: {},
+      goodsParams: [],
+      queryParams:[],
+      cat_id: 0,
       headers: { Authorization: "" },
       stepArr: [
         { title: "基本信息" },
@@ -167,6 +187,10 @@ export default {
         goods_introduce: this.introduce,
         pics: this.pics,
         attrs: this.attrs
+      }).then(res => {
+        if (res) {
+          this.$router.replace({ name: "goods" });
+        }
       });
     },
     editGoods() {
@@ -180,18 +204,23 @@ export default {
         goods_introduce: this.introduce,
         pics: this.pics,
         attrs: this.attrs
+      }).then(res => {
+        if (res) {
+          this.$router.replace({ name: "goods" });
+        }
       });
     },
     //商品分类列表
-    getCategories(){
-      this.$store.dispatch("getCategories").then(res=>{
-        this.categories=res;
-      })
+    getCategories() {
+      this.$store.dispatch("getCategories", { type: 3 }).then(res => {
+        this.categories = res;
+      });
     },
     //获取并处理多级联动选择的值
     getCascaderValue(value, selectedData) {
-      // console.log("响应值", selectedData);
-      this.classify =this.$store.getters.classifyArr(selectedData);
+      console.log("selectedData", selectedData);
+      this.classify = this.$store.getters.classifyArr(selectedData);
+      this.cat_id = selectedData[selectedData.length - 1].cat_id;
     },
     handleView(name) {
       this.imgName = name;
@@ -208,7 +237,7 @@ export default {
       } = res;
       file.url = url;
       file.name = tmp_path;
-      this.pics.push({pic:tmp_path})
+      this.pics.push({ pic: tmp_path });
     },
     handleFormatError(file) {
       this.$Notice.warning({
@@ -246,6 +275,24 @@ export default {
       } else {
         this.editGoods();
       }
+    },
+    async getParams(bool) {
+      if (!bool) {
+        this.goodsParams = await this.$store.dispatch("getCategoriesById", {
+          id: this.cat_id,
+          sel: "only"
+        });
+        this.queryParams=await this.$store.dispatch("queryParams", {
+          sel:"many",
+          id: this.cat_id,
+          // attr_sel: "only",
+          // attrId:3068
+        });
+        console.log("this.goodsParams", this.goodsParams);
+      }
+    },
+    returnSplit(str){
+      return str.split(",");
     }
   },
   mounted() {
@@ -264,7 +311,7 @@ export default {
 </script>
 
 <style  rel='stylesheet/scss' lang='scss' scoped>
-.box {
+.addgoods-box {
   background: #ffffff;
   display: flex;
   flex-direction: column;
@@ -292,68 +339,110 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    &:nth-of-type(5) {
+    &:nth-child(5){
       flex-direction: column;
     }
   }
   .add-btn {
     margin-bottom: 20px;
   }
+  .scroll-box {
+    overflow: auto;
+    a{
+        font-weight: bold;
+        margin-right: 10px;
+      }
+    .attr-div{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      
+    }
+    .params-div{
+      margin: 20px auto;
+      width: 70%;
+    }
+    .warn-div{
+      color: rgba(164, 84, 110, 0.7);
+      margin: 50px auto ;
+      width:120px;
+      font-size: 15px;
+      font-weight: bold;
+    }
+  }
 }
 </style>
 <style>
-.ivu-card-body {
+.addgoods-box .ivu-card-body {
   padding: 10px;
 }
-.ivu-col-span-12 {
+.addgoods-box .ivu-col-span-12 {
   display: block;
   width: 100%;
 }
-.ivu-row {
+.addgoods-box .ivu-row {
   width: 100%;
 }
-.demo-tabs-style1 {
+.addgoods-box .demo-tabs-style1 {
   background: #eee;
   padding: 16px;
 }
-.demo-tabs-style1 > .ivu-tabs-card > .ivu-tabs-content {
+.addgoods-box .demo-tabs-style1 > .ivu-tabs-card > .ivu-tabs-content {
   margin-top: -16px;
 }
 
-.demo-tabs-style1 > .ivu-tabs-card > .ivu-tabs-content > .ivu-tabs-tabpane {
-  background: #fff;
-  padding: 16px;
+.addgoods-box
+ .demo-tabs-style1
+ > .ivu-tabs-card
+ > .ivu-tabs-content
+ > .ivu-tabs-tabpane {
+    background: #fff;
+    padding: 16px;
+    height: 352px;
 }
 
-.demo-tabs-style1 > .ivu-tabs.ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-tab {
+.addgoods-box
+  .demo-tabs-style1
+  > .ivu-tabs.ivu-tabs-card
+  > .ivu-tabs-bar
+  .ivu-tabs-tab {
   border-color: transparent;
 }
 
-.demo-tabs-style1 > .ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-tab-active {
+.addgoods-box
+  .demo-tabs-style1
+  > .ivu-tabs-card
+  > .ivu-tabs-bar
+  .ivu-tabs-tab-active {
   border-color: #fff;
 }
-.demo-tabs-style2 > .ivu-tabs.ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-tab {
+.addgoods-box
+  .demo-tabs-style2
+  > .ivu-tabs.ivu-tabs-card
+  > .ivu-tabs-bar
+  .ivu-tabs-tab {
   border-radius: 0;
   background: #fff;
 }
-.ivu-tabs-nav-scroll {
+.addgoods-box .ivu-tabs-nav-scroll {
   display: flex;
   justify-content: center;
 }
 
-.ivu-input-wrapper {
+.addgoods-box .ivu-input-wrapper {
   width: 100%;
   float: right;
 }
-.ivu-cascader {
+.addgoods-box .ivu-cascader {
   width: 75%;
 }
 
-.ivu-upload-drag {
+.addgoods-box .ivu-upload-drag {
   width: 90px;
 }
 
-.demo-upload-list {
+.addgoods-box .demo-upload-list {
   display: inline-block;
   width: 90px;
   height: 90px;
@@ -367,11 +456,11 @@ export default {
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
   margin-right: 4px;
 }
-.demo-upload-list img {
+.addgoods-box .demo-upload-list img {
   width: 100%;
   height: 100%;
 }
-.demo-upload-list-cover {
+.addgoods-box .demo-upload-list-cover {
   display: none;
   position: absolute;
   top: 0;
@@ -380,10 +469,10 @@ export default {
   right: 0;
   background: rgba(0, 0, 0, 0.6);
 }
-.demo-upload-list:hover .demo-upload-list-cover {
+.addgoods-box .demo-upload-list:hover .demo-upload-list-cover {
   display: block;
 }
-.demo-upload-list-cover i {
+.addgoods-box .demo-upload-list-cover i {
   color: #fff;
   font-size: 20px;
   cursor: pointer;
