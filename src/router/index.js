@@ -1,19 +1,19 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Login from '../pages/Login'
-import Home from '../pages/Home'
-import Main from '../pages/Main';
-import Default from '../pages/MainChild/Default';
-import Users from '../pages/MainChild/Users';
-import Roles from '../pages/MainChild/Roles';
-import Rights from '../pages/MainChild/Rights';
-import GoodsMain from '../pages/MainChild/GoodsMain';
-import Goods from '../pages/MainChild/GoodsMain/Goods';
-import AddGoods from '../pages/MainChild/GoodsMain/AddGoods';
-import Params from '../pages/MainChild/Params';
-import Categories from '../pages/MainChild/Categories';
-import Orders from '../pages/MainChild/Orders';
-import Reports from '../pages/MainChild/Reports';
+const Home = () => import('../pages/Home')
+const Login= () => import('../pages/Login')
+const Main = () => import('../pages/Main')
+const Default = () => import('../pages/MainChild/Default')
+const Users = () => import('../pages/MainChild/Users')
+const Roles = () => import('../pages/MainChild/Roles')
+const Rights = () => import('../pages/MainChild/Rights')
+const GoodsMain = () => import('../pages/MainChild/GoodsMain')
+const Goods = () => import('../pages/MainChild/GoodsMain/Goods')
+const AddGoods = () => import('../pages/MainChild/GoodsMain/AddGoods')
+const Params = () => import('../pages/MainChild/Params')
+const Categories = () => import('../pages/MainChild/Categories')
+const Orders = () => import('../pages/MainChild/Orders')
+const Reports = () => import('../pages/MainChild/Reports')
 
 Vue.use(Router)
 

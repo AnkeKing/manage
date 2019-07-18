@@ -49,8 +49,7 @@ export default {
         roleId: this.row.id,
         rightId: name
       }).then(res => {
-        console.log("删除指定权限", res);
-        this.$emit("getVal", "啦啦啦啦");
+        this.$emit("getVal", "更新");
       });
     }
   }

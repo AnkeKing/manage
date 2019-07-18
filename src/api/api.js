@@ -35,7 +35,7 @@ function http(url, method, data) {
         data: data,
         params:data
     }).then(res => {
-        console.log("---------",res)
+        // console.log("api---------",res)
         if (res) {
             if (res.data.meta.status === 200||res.data.meta.status === 201||res.data.meta.status === 204) {
                 Message.success(res.data.meta.msg)

@@ -13,20 +13,37 @@
     <Tabs value="name1">
       <TabPane label="动态参数" name="name1">
         <div class="center-box">
-          <Table :columns="columns1" height="350":data="queryParams"></Table>
+          <Button type="success":disabled="cat_id===0?true:false" class="add-btn" @click="showModal('添加动态参数')">添加动态参数</Button>
+          <Table :columns="columns1" height="350" :data="queryParams"></Table>
         </div>
       </TabPane>
       <TabPane label="静态参数" name="name2">
         <div class="center-box">
+          <Button type="success":disabled="cat_id===0?true:false" class="add-btn"@click="showModal('添加静态参数')">添加静态参数</Button>
           <Table :columns="columns2" height="350" :data="goodsParams"></Table>
         </div>
       </TabPane>
     </Tabs>
+    <Modal v-model="modal1" :title="addType" @on-ok="toAddAttribute">
+      <div class="add-box">
+        <p>参数名称:</p>
+        <Input placeholder="classifyName" v-model="attr_name" />
+      </div>
+      <div class="add-box"v-if="addType==='添加动态参数'">
+        <p>参数值:</p>
+        <Input placeholder="多个参数值以逗号分隔" v-model="attr_vals" />
+      </div>
+      <div class="add-box"v-else>
+        <p>参数值:</p>
+        <Input placeholder="attr_vals" v-model="attr_vals" />
+      </div>
+    </Modal>
   </div>
 </template>
 
 <script>
-import {} from "../../api/http";
+import { editAttributes, addAttributes } from "../../api/http";
+import tag from "../../components/tag";
 export default {
   name: "Params-box",
   data() {
@@ -34,6 +51,10 @@ export default {
       categories: [],
       classify: "",
       cat_id: 0,
+      modal1: false,
+      attr_name: "",
+      attr_vals: "",
+      addType:"",
       goodsParams: [],
       queryParams: [],
       columns1: [
@@ -41,22 +62,17 @@ export default {
           title: "",
           type: "expand",
           width: 30,
-          render:(h,params)=>{
-            var newArr=params.row.attr_vals.split(",");
-            return newArr.map(child=>{
-              return h("Tag",{
-                style:{
-                  color:"rgba(246, 187, 66, 0.9)",
-                  backgroundColor:"rgba(246, 187, 66, 0.9)"
-                },
-                props:{
-                  name:child,  
-                  closable:true,
-                }
+          render: (h, params) => {
+            return h(tag, {
+              props: {
+                row: params.row
               },
-              child
-              )
-            })
+              on: {
+                getVal: val => {
+                  this.updateAttributes();
+                }
+              }
+            });
           }
         },
         {
@@ -206,7 +222,7 @@ export default {
                     console.log("this", params);
                     this.$Modal.confirm({
                       title: "提示",
-                      content: "<p>此操作将永久删除该用户，是否继续？</p>",
+                      content: "<p>此操作将永久删除该参数，是否继续？</p>",
                       okText: "OK",
                       cancelText: "Cancel",
                       onOk: () => {
@@ -226,11 +242,6 @@ export default {
       ],
       columns2: [
         {
-          title: "",
-          type: "expand",
-          width: 30
-        },
-        {
           title: "#",
           type: "index",
           width: 50
@@ -238,6 +249,10 @@ export default {
         {
           title: "属性名称",
           key: "attr_name"
+        },
+        {
+          title: "属性值",
+          key: "attr_vals"
         },
         {
           title: "操作",
@@ -377,7 +392,7 @@ export default {
                     console.log("this", params);
                     this.$Modal.confirm({
                       title: "提示",
-                      content: "<p>此操作将永久删除该用户，是否继续？</p>",
+                      content: "<p>此操作将永久删除该属性，是否继续？</p>",
                       okText: "OK",
                       cancelText: "Cancel",
                       onOk: () => {
@@ -397,7 +412,7 @@ export default {
       ]
     };
   },
-  created() {
+  async created() {
     this.getCategories();
   },
   methods: {
@@ -412,19 +427,46 @@ export default {
       this.cat_id = selectedData[selectedData.length - 1].cat_id;
       this.classify = this.$store.getters.classifyArr(selectedData);
     },
-    async getParams(bool) {
+    getParams(bool) {
       if (!bool) {
-        this.goodsParams = await this.$store.dispatch("getCategoriesById", {
+        this.updateAttributes();
+      }
+    },
+    async updateAttributes() {
+      this.goodsParams = await this.$store.dispatch("getCategoriesById", {
+        id: this.cat_id,
+        sel: "only"
+      });
+      this.queryParams = await this.$store.dispatch("queryParams", {
+        sel: "many",
+        id: this.cat_id
+      });
+    },
+    toAddAttribute() {
+      var that=this;
+      if (this.addType === "添加动态参数") {
+        addAttributes({
           id: this.cat_id,
-          sel: "only"
+          attr_name: this.attr_name,
+          attr_sel: "many",
+          attr_vals: this.attr_vals
+        }).then(res => {
+          that.updateAttributes();
         });
-        this.queryParams = await this.$store.dispatch("queryParams", {
-          sel: "many",
-          id: this.cat_id
-          // attr_sel: "only",
-          // attrId:3068
+      } else {
+        addAttributes({
+          id: this.cat_id,
+          attr_name: this.attr_name,
+          attr_sel: "only",
+          attr_vals: this.attr_vals
+        }).then(res => {
+          that.updateAttributes();
         });
       }
+    },
+    showModal(type){
+      this.modal1=true;
+      this.addType=type;
     }
   },
   components: {}
@@ -448,10 +490,17 @@ export default {
     flex-direction: column;
     margin-top: 10px;
   }
-  .center-box{
+  .center-box {
     width: 700px;
     height: 377px;
-    overflow: auto;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+  }
+  .add-btn {
+    margin: 0 auto;
+    width: 100px;
+    margin-bottom: 5px;
   }
 }
 </style>
@@ -460,8 +509,14 @@ export default {
   width: 270px;
   margin-left: 20px;
 }
-.params-box .ivu-tabs-tabpane{
+.params-box .ivu-tabs-tabpane {
   display: flex;
   justify-content: center;
+}
+.params-box .ivu-tag-text {
+  color: #fff;
+}
+.params-box .ivu-icon-ios-close:before {
+  color: #fff;
 }
 </style>

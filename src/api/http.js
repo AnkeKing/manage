@@ -100,7 +100,18 @@ export const deleteCategories = data => {//删除分类
 export const queryParams = data => {//根据 ID 查询参数
     return http('categories/'+data.id+'/attributes', 'get',data);
 }
+export const editAttributes = data => {//编辑提交参数
+    return http('categories/'+data.id+'/attributes/'+data.attrId, 'put',data);
+}
+export const addAttributes = data => {//添加动态参数或者静态属性
+    return http('categories/'+data.id+'/attributes', 'post',data);
+}
+export const deleteAttributes = data => {//删除参数
+    return http('categories/'+data.id+'/attributes/'+data.attrId, 'delete',data);
+}
+
 
 export const syncGoodsAttr = data => {//同步商品属性
     return http('goods/'+data.id+'/attributes', 'put', data);
 }
+
