@@ -13,7 +13,7 @@
       </div>
     </Modal>
     <Modal v-model="modal2" title="分配权限" @on-ok="setRoleRights">
-      <Tree :data="rights" show-checkbox @on-check-change="checkRights"></Tree>
+      <el-tree :data="rights"node-key="id" ref="checkTree" show-checkbox :props="defaultProps" accordion ></el-tree>
     </Modal>
   </div>
 </template>
@@ -44,6 +44,9 @@ export default {
       currentRoleId: 0,
       rolesList: [],
       rights: [],
+      defaultProps:{
+        label:"authName"
+      },
       columns1: [
         {
           width: 30,
@@ -113,7 +116,7 @@ export default {
                                 "a",
                                 {
                                   style: {
-                                    fontSize: "18px"
+                                    fontSize: "15px"
                                   }
                                 },
                                 "编辑角色"
@@ -229,12 +232,7 @@ export default {
                     this.getRoles();
                     this.modal2 = true;
                     this.currentRoleId = params.row.id;
-                    console.log("this.params", params);
-                    // if (params.row.children.length > 0) {
-                    //     this.setRights(params.row.children);
-                    // }else{
-                    //     this.getRights();
-                    // }
+                    this.$refs.checkTree.setCheckedNodes(params.row.children);
                   }
                 }
               })
@@ -261,7 +259,7 @@ export default {
       getRoleById({
         id: id
       }).then(res => {
-        console.log("根据 ID 查询角色", res);
+        // console.log("根据 ID 查询角色", res);
       });
     },
     //获取所有权限列表
@@ -270,67 +268,9 @@ export default {
       getRights({
         type: "tree"
       }).then(res => {
-        console.log("所有权限", res);
-        var rights = res;
-        for (var r in rights) {
-          var parent = rights[r];
-          parent.title = parent.authName;
-          for (var c in parent.children) {
-            var child = parent.children[c];
-            child.title = child.authName;
-            for (var s in child.children) {
-              var grandSon = child.children[s];
-              grandSon.title = grandSon.authName;
-              grandSon.checked = false;
-            }
-          }
-        }
-        this.rights = rights;
+        // console.log("所有权限", res);
+        this.rights = res;
       });
-    },
-    //设置权限是否选中
-    setRights(currentRoleRights) {
-      // console.log("???", currentRoleRights);
-      // var rights = JSON.parse(JSON.stringify(this.rights));
-      // var allGrandSonArr = [];
-      // for (var r in rights) {
-      //   var parent = rights[r];
-      //   for (var c in parent.children) {
-      //     var child = parent.children[c];
-      //     for (var s in child.children) {
-      //       var grandSon = child.children[s];
-      //       grandSon.checked = false;
-      //       allGrandSonArr.push(grandSon);
-      //     }
-      //   }
-      // }
-      //   console.log("所有数组", allGrandSonArr);
-      //   var currentGrandSonArr = [];
-      //   for (var r in currentRoleRights) {
-      //     var currentParent = currentRoleRights[r];
-      //     for (var c in currentParent.children) {
-      //       var currentChild = currentParent.children[c];
-      //       for (var s in currentChild.children) {
-      //         var currentGrandSon = currentChild.children[s];
-      //         currentGrandSonArr.push(currentGrandSon);
-      //       }
-      //     }
-      //   }
-      //   console.log("当前新数组", currentGrandSonArr);
-      //   for (var curr in currentGrandSonArr) {
-      //     for (var all in allGrandSonArr) {
-      //       if (allGrandSonArr[all].id === currentGrandSonArr[curr].id) {
-      //         for (var r in rights) {
-      //           var parent = rights[r];
-      //           for (var c in parent.children) {
-      //             var child = parent.children[c];
-      //             child.children[all].checked = true;
-      //           }
-      //         }
-      //       }
-      //     }
-      //   }
-      // this.rights = rights;
     },
     //显示添加角色输入框
     showModal() {
@@ -350,6 +290,7 @@ export default {
     //角色授权
     setRoleRights() {
       //bug
+      this.checkRights();
       setRoleRights({
         roleId: this.currentRoleId,
         rids: this.rids
@@ -358,18 +299,18 @@ export default {
       });
     },
     //选中权限
-    checkRights(event) {
+    checkRights() {
+      var checkArr=this.$refs.checkTree.getCheckedNodes(false,false);
       var str = "";
-      for (var e in event) {
-        if (e != event.length - 1) {
-          str = str + event[e].id + ",";
+      for (var e in checkArr) {
+        if (e != checkArr.length - 1) {
+          str = str + checkArr[e].id + ",";
         } else {
-          str = str + event[e].id;
+          str = str + checkArr[e].id;
         }
       }
       this.rids = { rids: str };
-      // console.log("事件触发", event);
-      // console.log("拼接形成", this.rids);
+      
     }
   },
   components: {

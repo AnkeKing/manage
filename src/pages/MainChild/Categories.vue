@@ -104,7 +104,7 @@ export default {
                                 "a",
                                 {
                                   style: {
-                                    fontSize: "18px"
+                                    fontSize: "15px"
                                   }
                                 },
                                 "修改商品分类"

@@ -63,7 +63,6 @@ const Store = new Vuex.Store({
                 attr_sel: obj.attr_sel,
                 attr_vals: obj.attr_vals
             }).then(res => {
-                console.log("查询参数", res);
                 return res;
             })
         },

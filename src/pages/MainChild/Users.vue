@@ -156,7 +156,7 @@ export default {
                                 "a",
                                 {
                                   style: {
-                                    fontSize: "18px"
+                                    fontSize: "15px"
                                   }
                                 },
                                 "编辑用户"
@@ -447,7 +447,6 @@ export default {
         }
         this.users_data = users_data;
         this.users_list = this.users_data.users;
-        console.log("用户列表", this.users_data);
       });
     },
     //搜索

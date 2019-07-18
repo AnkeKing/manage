@@ -109,9 +109,16 @@ export const addAttributes = data => {//添加动态参数或者静态属性
 export const deleteAttributes = data => {//删除参数
     return http('categories/'+data.id+'/attributes/'+data.attrId, 'delete',data);
 }
-
-
 export const syncGoodsAttr = data => {//同步商品属性
     return http('goods/'+data.id+'/attributes', 'put', data);
 }
+export const getOrders = data => {//订单数据列表
+    return http('orders', 'get', data);
+}
+export const editOrders = data => {//修改订单状态
+    return http('orders/'+data.id, 'put', data);
+}
 
+export const getReports = data => {//基于时间统计（折线图）
+    return http('reports/type/'+data.type, 'get', data);
+}
