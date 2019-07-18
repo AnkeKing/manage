@@ -31,19 +31,23 @@
 .box .back-box .top-content img {
   width: 30px;
   height: 30px;
-  margin-right: 30px;
+}
+
+.box .back-box .top-content img:nth-of-type(2) {
+  cursor: pointer;
 }
 
 .box .back-box .top-content a {
   font-weight: bold;
   font-family: "Arial";
   font-size: 22px;
+  margin: 0 30px 0 30px;
 }
 
 .box .back-box .bottom-box {
   display: flex;
   justify-content: space-between;
-  padding-top: 20px;
+  padding-top: 10px;
 }
 
 .box .back-box .bottom-box .left-select-box {

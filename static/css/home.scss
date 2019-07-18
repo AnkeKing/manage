@@ -28,20 +28,23 @@
       img {
         width: 30px;
         height: 30px;
-        margin-right: 30px;
+        &:nth-of-type(2){
+          cursor: pointer;
+        }
       }
 
       a {
         font-weight: bold;
         font-family: "Arial";
         font-size: 22px;
+        margin: 0 30px 0 30px;
       }
     }
 
     .bottom-box {
       display: flex;
       justify-content: space-between;
-      padding-top: 20px;
+      padding-top: 10px;
 
       .left-select-box {
         width: 14%;

@@ -17,16 +17,21 @@ export default {
   },
   mounted() {
     var echarts = require("echarts");
-
     // 基于准备好的dom，初始化echarts实例
     this.myChart = echarts.init(document.getElementById("main"));
-    console.log("echart", this.myChart);
-    // 绘制图表
   },
   created() {
     var that = this;
     getReports({ type: 1 }).then(res => {
-      console.log("数据", res);
+      res.tooltip = {
+        trigger: "axis",
+        axisPointer: {
+          type: "cross",
+          label: {
+            backgroundColor: "#6a7985"
+          }
+        }
+      };
       that.myChart.setOption(res);
     });
   },
@@ -37,6 +42,7 @@ export default {
 
 <style  rel='stylesheet/scss' lang='scss' scoped>
 .box {
+  padding-top: 70px;
   #main {
     width: 100%;
     height: 400px;

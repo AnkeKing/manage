@@ -4,6 +4,7 @@
       <div class="top-content">
         <img src="../assets/img/yue.png" />
         <a>Management System</a>
+        <img src="../assets/img/cancel.png"@click="cancel">
       </div>
       <div class="bottom-box">
         <div class="left-select-box">
@@ -53,6 +54,11 @@ export default {
           titleArr: [parentTitle, child.authName]
         }
       });
+    },
+    cancel(){
+      console.log("退出")
+      this.$store.commit('setToken', "");
+      localStorage.removeItem("vuex");
     }
   },
   created() {
