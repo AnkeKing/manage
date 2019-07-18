@@ -8,14 +8,14 @@
       </div>
       <div class="add-box">
         <p>分类:</p>
-        <Cascader :data="selectCategories" @on-change="getCascaderValue" change-on-select></Cascader>
+        <Cascader :data="selectCategories.result" @on-change="getCascaderValue" change-on-select></Cascader>
       </div>
     </Modal>
-    <Table :columns="columns1" height="422" :data="categories"></Table>
-    <!-- <div class="page-box">
+    <Table :columns="columns1" height="422" :data="categories.result"></Table>
+    <div class="page-box">
       <Page
-        :total="categories.length"
-        :page-size="pageSize"
+        :total="categories.total"
+        :page-size="pagesize"
         @on-page-size-change="changePageSize"
         @on-change="changePage"
         :page-size-opts="opts"
@@ -23,7 +23,7 @@
         show-elevator
         show-sizer
       />
-    </div>-->
+    </div>
   </div>
 </template>
 
@@ -182,24 +182,36 @@ export default {
           }
         }
       ],
-      opts: [2, 4, 6, 8],
-      pageSize: 4,
-      pageNum: 1
+      opts: [5, 10, 15, 20],
+      pagesize: 10,
+      pagenum: 1
     };
   },
   created() {
-    this.getCategories();
+    this.getCategories(this.pagesize, this.pagenum);
     selfs = this;
   },
   methods: {
     //商品分类列表
-    getCategories() {
-      this.$store.dispatch("getCategories", { type: 3 }).then(res => {
-        this.categories = res;
-      });
-      this.$store.dispatch("getCategories", { type: 2 }).then(res => {
-        this.selectCategories = res;
-      });
+    getCategories(pagesize, pagenum) {
+      this.$store
+        .dispatch("getCategories", {
+          pagesize: pagesize,
+          pagenum: pagenum,
+          type: 3
+        })
+        .then(res => {
+          this.categories = res;
+        });
+      this.$store
+        .dispatch("getCategories", {
+          pagesize: pagesize,
+          pagenum: pagenum,
+          type: 2
+        })
+        .then(res => {
+          this.selectCategories = res;
+        });
     },
     toAddCategories() {
       addCategories({
@@ -207,26 +219,22 @@ export default {
         cat_name: this.classifyName,
         cat_level: this.level
       }).then(res => {
-        this.getCategories();
+        this.getCategories(this.pagesize, this.pagenum);
       });
     },
     paintTable(table_data, h) {
-      // if (table_data.children) {
       return this.returnTable(table_data, h);
-      // }
     },
     returnTable(table_data, h) {
       return h("Table", {
-        // style: window.selfs.returnTableStyle(table_data.cat_level),
         props: {
           data: table_data.children,
           showHeader: false,
           columns: [
             {
               width: 30,
-              type: window.selfs.returnTableStyle(table_data.children),
+              type: "expand",
               render(h, params) {
-                console.log("=====", params.row.children);
                 return window.selfs.paintTable(params.row, h);
               }
             },
@@ -314,7 +322,7 @@ export default {
                               id: params.row.cat_id,
                               cat_name: cat_name
                             }).then(res => {
-                              this.getCategories();
+                              this.getCategories(this.pagesize, this.pagenum);
                             });
                           },
                           onCancel: () => {}
@@ -348,7 +356,7 @@ export default {
                             deleteCategories({
                               id: params.row.cat_id
                             }).then(res => {
-                              this.getCategories();
+                              this.getCategories(this.pagesize, this.pagenum);
                             });
                           }
                         });
@@ -362,15 +370,6 @@ export default {
         }
       });
     },
-    returnTableStyle(children) {
-      //无效
-      console.log("table_data.children", children);
-      if (children) {
-        return "expand";
-      } else {
-        return "";
-      }
-    },
     //显示添加角色输入框
     showModal() {
       this.classify = "";
@@ -379,21 +378,16 @@ export default {
     },
     //获取并处理多级联动选择的值
     getCascaderValue(value, selectedData) {
-      console.log(value, selectedData);
       this.cat_pid = selectedData[selectedData.length - 1].cat_id;
       this.level = selectedData[selectedData.length - 1].cat_level + 1;
-      console.log("selectedData", selectedData);
     },
-    expandChange(value) {
-      console.log("响应值222", value);
+    changePageSize(pagesize) {
+      this.pagesize = pagesize;
+      this.getCategories(this.pagesize, this.pagenum);
     },
-    changePageSize(pageSize) {
-      this.pageSize = pageSize;
-      this.getUsers(this.pageNum, this.pageSize);
-    },
-    changePage(pageNum) {
-      this.pageNum = pageNum;
-      this.getUsers(this.pageNum, this.pageSize);
+    changePage(pagenum) {
+      this.pagenum = pagenum;
+      this.getCategories(this.pagesize, this.pagenum);
     }
   },
   components: {}

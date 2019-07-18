@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import router from '../router/index';
 import createPersistedState from "vuex-persistedstate"
-import { getCategories,getCategoriesById,queryParams } from '../api/http';
+import { getCategories, getCategoriesById, findAttributesById } from '../api/http';
 Vue.use(Vuex)
 
 const Store = new Vuex.Store({
@@ -46,30 +46,35 @@ const Store = new Vuex.Store({
             }, 1777)
         },
         //参数列表
-        getCategoriesById({dispatch},obj){
+        getCategoriesById({ dispatch }, obj) {
             return getCategoriesById({
-                id:obj.id,
-                sel:obj.sel
-            }).then(res=>{
-                console.log("参数列表",res);
+                id: obj.id,
+                sel: obj.sel
+            }).then(res => {
+                console.log("参数列表", res);
                 return res;
             })
         },
         //根据ID查询参数
-        queryParams({dispatch},obj){
-            return queryParams({
-                id:obj.id,
-                // attrId:obj.attrId,
-                sel:obj.sel
-            }).then(res=>{
-                console.log("查询参数",res);
+        findAttributesById({ dispatch }, obj) {
+            return findAttributesById({
+                id: obj.id,
+                attrId: obj.attrId,
+                attr_sel: obj.attr_sel,
+                attr_vals: obj.attr_vals
+            }).then(res => {
+                console.log("查询参数", res);
                 return res;
             })
         },
         //商品分类列表
         getCategories({ dispatch }, obj) {
-            return getCategories({ type: obj.type }).then(res => {
-                dispatch("FOR", res);
+            return getCategories({
+                pagesize: obj.pagesize,
+                pagenum: obj.pagenum, 
+                type: obj.type
+            }).then(res => {
+                dispatch("FOR", res.result);
                 return res;
             });
         },

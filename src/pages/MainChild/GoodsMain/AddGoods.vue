@@ -282,13 +282,10 @@ export default {
           id: this.cat_id,
           sel: "only"
         });
-        this.queryParams=await this.$store.dispatch("queryParams", {
-          sel:"many",
+        this.queryParams=await this.$store.dispatch("getCategoriesById", {
           id: this.cat_id,
-          // attr_sel: "only",
-          // attrId:3068
+          sel:"many",
         });
-        console.log("this.goodsParams", this.goodsParams);
       }
     },
     returnSplit(str){

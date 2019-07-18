@@ -13,13 +13,23 @@
     <Tabs value="name1">
       <TabPane label="动态参数" name="name1">
         <div class="center-box">
-          <Button type="success":disabled="cat_id===0?true:false" class="add-btn" @click="showModal('添加动态参数')">添加动态参数</Button>
+          <Button
+            type="success"
+            :disabled="cat_id===0?true:false"
+            class="add-btn"
+            @click="showModal('添加动态参数')"
+          >添加动态参数</Button>
           <Table :columns="columns1" height="350" :data="queryParams"></Table>
         </div>
       </TabPane>
       <TabPane label="静态参数" name="name2">
         <div class="center-box">
-          <Button type="success":disabled="cat_id===0?true:false" class="add-btn"@click="showModal('添加静态参数')">添加静态参数</Button>
+          <Button
+            type="success"
+            :disabled="cat_id===0?true:false"
+            class="add-btn"
+            @click="showModal('添加静态参数')"
+          >添加静态参数</Button>
           <Table :columns="columns2" height="350" :data="goodsParams"></Table>
         </div>
       </TabPane>
@@ -29,11 +39,11 @@
         <p>参数名称:</p>
         <Input placeholder="classifyName" v-model="attr_name" />
       </div>
-      <div class="add-box"v-if="addType==='添加动态参数'">
+      <div class="add-box" v-if="addType==='添加动态参数'">
         <p>参数值:</p>
         <Input placeholder="多个参数值以逗号分隔" v-model="attr_vals" />
       </div>
-      <div class="add-box"v-else>
+      <div class="add-box" v-else>
         <p>参数值:</p>
         <Input placeholder="attr_vals" v-model="attr_vals" />
       </div>
@@ -42,7 +52,11 @@
 </template>
 
 <script>
-import { editAttributes, addAttributes } from "../../api/http";
+import {
+  editAttributes,
+  addAttributes,
+  deleteAttributes
+} from "../../api/http";
 import tag from "../../components/tag";
 export default {
   name: "Params-box",
@@ -54,7 +68,7 @@ export default {
       modal1: false,
       attr_name: "",
       attr_vals: "",
-      addType:"",
+      addType: "",
       goodsParams: [],
       queryParams: [],
       columns1: [
@@ -105,9 +119,10 @@ export default {
                 },
                 on: {
                   click: () => {
-                    let email = params.row.email;
-                    let mobile = params.row.mobile;
+                    let attr_name = params.row.attr_name;
+                    let attr_vals = params.row.attr_vals;
                     this.$Modal.confirm({
+                      
                       render: h => {
                         return h("div", [
                           h(
@@ -123,10 +138,10 @@ export default {
                                 "a",
                                 {
                                   style: {
-                                    fontSize: "18px"
+                                    fontSize: "15px"
                                   }
                                 },
-                                "编辑用户"
+                                "编辑参数"
                               )
                             ]
                           ),
@@ -136,31 +151,15 @@ export default {
                               class: "my-div"
                             },
                             [
-                              h("a", "用户名 :"),
+                              h("a", "参数名称 :"),
                               h("Input", {
                                 props: {
-                                  value: params.row.username,
-                                  autofocus: true,
-                                  disabled: true
-                                }
-                              })
-                            ]
-                          ),
-                          h(
-                            "div",
-                            {
-                              class: "my-div"
-                            },
-                            [
-                              h("a", "邮箱 :"),
-                              h("Input", {
-                                props: {
-                                  value: params.row.email,
+                                  value: params.row.attr_name,
                                   autofocus: true
                                 },
                                 on: {
                                   input: val => {
-                                    email = val;
+                                    attr_name = val;
                                   }
                                 }
                               })
@@ -172,15 +171,15 @@ export default {
                               class: "my-div"
                             },
                             [
-                              h("a", "电话 :"),
+                              h("a", "参数值 :"),
                               h("Input", {
                                 props: {
-                                  value: params.row.mobile,
+                                  value: params.row.attr_vals,
                                   autofocus: true
                                 },
                                 on: {
                                   input: val => {
-                                    mobile = val;
+                                    attr_vals = val;
                                   }
                                 }
                               })
@@ -189,13 +188,12 @@ export default {
                         ]);
                       },
                       onOk: () => {
-                        editUser({
-                          id: params.row.id,
-                          email: email,
-                          mobile: mobile
-                        }).then(res => {
-                          this.getUsers(this.pageNum, this.pageSize);
-                        });
+                        this.editAttributes(
+                          params.row.attr_id,
+                          attr_name,
+                          "many",
+                          attr_vals
+                        );
                       },
                       onCancel: () => {}
                     });
@@ -226,11 +224,7 @@ export default {
                       okText: "OK",
                       cancelText: "Cancel",
                       onOk: () => {
-                        deleteUser({
-                          id: params.row.id
-                        }).then(res => {
-                          this.getUsers(this.pageNum, this.pageSize);
-                        });
+                        this.deleteAttributes(params.row.attr_id);
                       }
                     });
                   }
@@ -275,8 +269,8 @@ export default {
                 },
                 on: {
                   click: () => {
-                    let email = params.row.email;
-                    let mobile = params.row.mobile;
+                    let attr_name = params.row.attr_name;
+                    let attr_vals = params.row.attr_vals;
                     this.$Modal.confirm({
                       render: h => {
                         return h("div", [
@@ -293,10 +287,10 @@ export default {
                                 "a",
                                 {
                                   style: {
-                                    fontSize: "18px"
+                                    fontSize: "15px"
                                   }
                                 },
-                                "编辑用户"
+                                "编辑参数"
                               )
                             ]
                           ),
@@ -306,31 +300,15 @@ export default {
                               class: "my-div"
                             },
                             [
-                              h("a", "用户名 :"),
+                              h("a", "参数名称 :"),
                               h("Input", {
                                 props: {
-                                  value: params.row.username,
-                                  autofocus: true,
-                                  disabled: true
-                                }
-                              })
-                            ]
-                          ),
-                          h(
-                            "div",
-                            {
-                              class: "my-div"
-                            },
-                            [
-                              h("a", "邮箱 :"),
-                              h("Input", {
-                                props: {
-                                  value: params.row.email,
+                                  value: params.row.attr_name,
                                   autofocus: true
                                 },
                                 on: {
                                   input: val => {
-                                    email = val;
+                                    attr_name = val;
                                   }
                                 }
                               })
@@ -342,15 +320,15 @@ export default {
                               class: "my-div"
                             },
                             [
-                              h("a", "电话 :"),
+                              h("a", "参数值 :"),
                               h("Input", {
                                 props: {
-                                  value: params.row.mobile,
+                                  value: params.row.attr_vals,
                                   autofocus: true
                                 },
                                 on: {
                                   input: val => {
-                                    mobile = val;
+                                    attr_vals = val;
                                   }
                                 }
                               })
@@ -359,13 +337,12 @@ export default {
                         ]);
                       },
                       onOk: () => {
-                        editUser({
-                          id: params.row.id,
-                          email: email,
-                          mobile: mobile
-                        }).then(res => {
-                          this.getUsers(this.pageNum, this.pageSize);
-                        });
+                        this.editAttributes(
+                          params.row.attr_id,
+                          attr_name,
+                          "only",
+                          attr_vals
+                        );
                       },
                       onCancel: () => {}
                     });
@@ -392,15 +369,11 @@ export default {
                     console.log("this", params);
                     this.$Modal.confirm({
                       title: "提示",
-                      content: "<p>此操作将永久删除该属性，是否继续？</p>",
+                      content: "<p>此操作将永久删除该参数，是否继续？</p>",
                       okText: "OK",
                       cancelText: "Cancel",
                       onOk: () => {
-                        deleteUser({
-                          id: params.row.id
-                        }).then(res => {
-                          this.getUsers(this.pageNum, this.pageSize);
-                        });
+                        this.deleteAttributes(params.row.attr_id);
                       }
                     });
                   }
@@ -437,13 +410,13 @@ export default {
         id: this.cat_id,
         sel: "only"
       });
-      this.queryParams = await this.$store.dispatch("queryParams", {
-        sel: "many",
-        id: this.cat_id
+      this.queryParams = await this.$store.dispatch("getCategoriesById", {
+        id: this.cat_id,
+        sel: "many"
       });
     },
     toAddAttribute() {
-      var that=this;
+      var that = this;
       if (this.addType === "添加动态参数") {
         addAttributes({
           id: this.cat_id,
@@ -464,9 +437,32 @@ export default {
         });
       }
     },
-    showModal(type){
-      this.modal1=true;
-      this.addType=type;
+    showModal(type) {
+      this.modal1 = true;
+      this.addType = type;
+      this.attr_name = "";
+      this.attr_vals = "";
+    },
+    deleteAttributes(attrId) {
+      var that = this;
+      deleteAttributes({
+        id: this.cat_id,
+        attrId: attrId
+      }).then(res => {
+        that.updateAttributes();
+      });
+    },
+    editAttributes(attr_id, attr_name, attr_sel, attr_vals) {
+      var that=this;
+      editAttributes({
+        id: this.cat_id,
+        attrId: attr_id,
+        attr_name: attr_name,
+        attr_sel: attr_sel,
+        attr_vals: attr_vals
+      }).then(res => {
+        that.updateAttributes();
+      });
     }
   },
   components: {}

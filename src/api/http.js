@@ -97,8 +97,8 @@ export const editCategories = data => {//编辑提交分类
 export const deleteCategories = data => {//删除分类
     return http('categories/'+data.id, 'delete',data);
 }
-export const queryParams = data => {//根据 ID 查询参数
-    return http('categories/'+data.id+'/attributes', 'get',data);
+export const findAttributesById = data => {//根据 ID 查询参数
+    return http('categories/'+data.id+'/attributes/'+data.attrId, 'get',data);
 }
 export const editAttributes = data => {//编辑提交参数
     return http('categories/'+data.id+'/attributes/'+data.attrId, 'put',data);
